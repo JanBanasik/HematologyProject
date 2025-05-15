@@ -4,8 +4,6 @@
 <head>
     <title>Strona Główna</title>
     <style>
-        /* Możesz dodać tutaj style specyficzne tylko dla index.html,
-           ale globalne style z layout.html są już dostępne */
         .test-list {
             list-style: none;
             padding: 0;
@@ -33,9 +31,11 @@
             transform: translateY(0);
         }
     </style>
+    <link rel="stylesheet" href="../static/css/global.css">
 </head>
 <body>
-<!-- Ta sekcja .page-content zostanie wstawiona do miejsca oznaczonego jako ${content} w layout.html -->
+
+
 <div class="page-content">
     <h1>Witaj w Aplikacji Medycznej</h1>
     <p>Tutaj możesz skorzystać z dostępnych narzędzi do predykcji i analizy badań.</p>
@@ -48,7 +48,9 @@
     </ul>
 </div>
 
-<!-- Skrypty specyficzne dla strony (w tym przypadku brak) -->
-<script></script>
+
+<script>
+
+</script>
 </body>
 </html>

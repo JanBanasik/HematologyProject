@@ -1,0 +1,242 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #e0f7fa; /* Bardzo jasny niebieski */
+    color: #01579b; /* Ciemniejszy niebieski */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Styl do blokowania scrollowania tła gdy menu jest otwarte (używany przez JS) */
+body.menu-open {
+    overflow: hidden;
+}
+
+/* Style dla głównego kontenera treści */
+.container {
+    flex-grow: 1;
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+    width: calc(100% - 80px);
+    box-sizing: border-box;
+}
+
+h1, h2 {
+    color: #0277bd;
+    margin-top: 0;
+}
+
+/* Style dla formularzy (formularz anemii, logowanie, rejestracja) */
+.form-container, .login-form, .registration-form {
+    display: grid; /* Używamy grid do układu pól */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Automatyczne kolumny responsywne */
+    gap: 20px; /* Odstęp między polami */
+    margin-bottom: 20px;
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Styl specyficzny dla przycisku submit w formularzach, zajmuje całą szerokość */
+.form-container button[type="submit"],
+.login-form button[type="submit"],
+.registration-form button[type="submit"] {
+    grid-column: 1 / -1; /* Przycisk zajmuje całą szerokość gridu */
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #01579b;
+}
+
+.form-group input[type="number"],
+.form-group input[type="text"],
+.form-group input[type="password"]
+{
+    padding: 10px;
+    border: 1px solid #b3e5fc;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input[type="number"]:focus,
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus
+{
+    border-color: #0288d1;
+    box-shadow: 0 0 5px rgba(2, 136, 209, 0.5);
+    outline: none;
+}
+
+/* Style przycisku submit (przeniesione do selektora z klasą formularza wyżej) */
+button[type="submit"] {
+    background-color: #4fc3f7;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #29b6f6;
+    transform: translateY(-2px);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* Style dla tabeli historii */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0f7fa;
+}
+
+th {
+    background-color: #b3e5fc;
+    color: #01579b;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #e0f7fa;
+}
+
+/* Style dla sekcji wyniku */
+#result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e0f7fa;
+    border: 1px solid #b3e5fc;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    color: #01579b;
+}
+#result strong {
+    color: #0277bd;
+}
+
+/* Style dla linków nawigacyjnych (inne niż w navbarze) */
+.action-links {
+    margin-top: 20px;
+}
+.action-links a {
+    display: inline-block;
+    margin-right: 15px;
+    color: #0277bd;
+    text-decoration: none;
+    font-weight: bold;
+}
+.action-links a:hover {
+    text-decoration: underline;
+}
+
+
+/* Style dla kontenerów logowania/rejestracji (centrowanie, tło, cień) */
+.login-container, .registration-container {
+    max-width: 400px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Style dla komunikatów błędów/sukcesu */
+.alert-danger, .alert-info {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    text-align: left;
+}
+.alert-danger {
+    color: #b71c1c;
+    background-color: #ffcdd2;
+    border: 1px solid #ef9a9a;
+}
+.alert-info {
+    color: #01579b;
+    background-color: #b3e5fc;
+    border: 1px solid #81d4fa;
+}
+
+/* Style dla linku "Masz już konto?" */
+.login-link-text {
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+.login-link-text a {
+    color: #0277bd;
+    text-decoration: none;
+    font-weight: bold;
+}
+.login-link-text a:hover {
+    text-decoration: underline;
+}
+
+
+/* Style dla linku test-link na stronie głównej */
+.test-link {
+    display: inline-block;
+    background-color: #4fc3f7; /* Jasny niebieski */
+    color: white !important; /* Użyj !important aby nadpisać style linków z navbara */
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.test-link:hover {
+    background-color: #29b6f6;
+    transform: translateY(-2px);
+}
+.test-link:active {
+    transform: translateY(0);
+}
+
+/* Media Query dla mniejszych ekranów (poniżej 768px) - dostosowane style formularzy */
+@media (max-width: 768px) {
+    /* Na małych ekranach, formularze login/rejestracja nie potrzebują gridu */
+    .login-form, .registration-form {
+        display: block; /* Powrót do domyślnego flow */
+        max-width: 100%;
+        margin: 0 auto; /* Centruj */
+    }
+    .login-form .form-group,
+    .registration-form .form-group {
+        width: 100%; /* Pola zajmują całą szerokość */
+        margin-bottom: 15px; /* Mniejszy odstęp */
+    }
+    .login-form button[type="submit"],
+    .registration-form button[type="submit"] {
+        width: auto; /* Przycisk nie musi zajmować całej szerokości w block */
+        grid-column: auto; /* Usuń grid column */
+        padding: 12px 25px; /* Przywróć padding przycisku */
+    }
+}

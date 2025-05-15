@@ -4,15 +4,13 @@
 <head>
     <title>Formularz Predykcji Anemii</title>
     <style>
-        /* Style specyficzne dla formularza, jeśli potrzebne.
-           Większość stylów formularza jest w layout.html */
+
     </style>
 </head>
 <body>
 <div class="page-content">
     <h2>Formularz Predykcji Anemii</h2>
     <form id="blood-form" class="form-container">
-        <!-- Dodano etykiety (<label>) i id do pól input dla lepszej dostępności i stylizacji -->
         <div class="form-group">
             <label for="RBC">RBC:</label>
             <input type="number" step="any" name="RBC" id="RBC" required placeholder="np. 4.5">
@@ -54,9 +52,8 @@
     </form>
 
     <div id="result"></div>
-
-    <!-- Dodano linki do historii i nowego formularza -->
-    <div class="action-links"> <!-- Upewnij się, że linki są w div z klasą action-links -->
+    >
+    <div class="action-links">
         <a href="/anemia/history">Zobacz historię</a>
     </div>
 </div>

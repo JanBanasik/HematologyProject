@@ -1,0 +1,269 @@
+/* src/main/resources/static/css/navbar.css */
+
+/* Style dla navbara */
+.navbar {
+    background-color: #0277bd; /* Medium blue */
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10; /* Upewnij się, że navbar jest nad treścią */
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between; /* Tytuł po lewej, menu po prawej */
+    align-items: center;
+    max-width: 1200px; /* Ogranicz szerokość zawartości navbara */
+    margin: 0 auto; /* Centruj zawartość navbara */
+    width: 100%;
+}
+
+.navbar .app-title {
+    color: white;
+    font-size: 1.4em;
+    font-weight: bold;
+    text-decoration: none;
+}
+.navbar .app-title:hover {
+    color: #b3e5fc;
+}
+
+/* Style dla ikony hamburgera */
+.hamburger-icon {
+    display: none; /* Domyślnie ukryty na większych ekranach */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8em;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 11; /* Nad menu mobilnym */
+}
+
+/* Style dla głównej listy menu na większych ekranach (domyślne - poziome) */
+.navbar-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex; /* Ułóż elementy poziomo */
+    align-items: center;
+    /* Usunieto transform transition stąd, będzie tylko w media query */
+}
+
+.navbar-menu li {
+    margin-left: 25px; /* Odstęp między elementami */
+    position: relative; /* Ważne dla rozwijanych menu */
+}
+
+/* Style dla linków w głównym menu */
+.navbar-menu a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+    display: block; /* Aby wypełniały li */
+    padding: 5px 0; /* Lekki padding pionowy */
+}
+
+.navbar-menu a:hover {
+    color: #b3e5fc;
+}
+
+/* Styl dla przycisku "Badania" */
+.services-button {
+    background: none;
+    border: none;
+    padding: 5px 0; /* padding jak linki */
+    font: inherit;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+.services-button:hover {
+    color: #b3e5fc;
+}
+
+/* Styl dla rozwijanego menu Badań (ukryte domyślnie na dużych ekranach) */
+.services-dropdown {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    /* display: none; Usunięto display: none, będziemy używać max-height */
+    position: absolute; /* Pozycjonowanie absolutne pod przyciskiem */
+    top: 100%; /* Tuż pod elementem nadrzędnym (li.navbar-services) */
+    left: 0; /* Wyrównanie do lewej przycisku */
+    background-color: #0277bd; /* To samo tło co navbar */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    min-width: 180px; /* Minimalna szerokość menu */
+    z-index: 20; /* Nad navbarem i treścią */
+    border-radius: 0 0 4px 4px; /* Zaokrągl tylko dół */
+    overflow: hidden; /* Ukryj zawartość wychodzącą poza max-height */
+    /* Style do animacji */
+    max-height: 0; /* Startowa wysokość (ukryte) */
+    opacity: 0; /* Startowa przezroczystość */
+    visibility: hidden; /* Ukryj element dla czytników ekranu gdy zwinięty */
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Animacja */
+}
+
+/* Pokaż rozwijane menu Badań przy najechaniu lub focusie na element nadrzędny (li.navbar-services) na dużych ekranach */
+.navbar-services:hover > .services-dropdown,
+.navbar-services:focus-within > .services-dropdown {
+    max-height: 500px; /* Wystarczająco duża wartość, żeby pomieścić zawartość */
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Styl dla elementów listy w rozwijanym menu Badań na dużych ekranach */
+.services-dropdown li {
+    margin: 0; /* Usuń marginesy */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Delikatna linia */
+}
+.services-dropdown li:last-child {
+    border-bottom: none; /* Bez linii pod ostatnim elementem */
+}
+
+/* Styl dla linków w rozwijanym menu Badań */
+.services-dropdown a {
+    padding: 10px 15px; /* Większy padding w menu rozwijanym */
+    font-size: 1em; /* Mniejszy rozmiar czcionki */
+    white-space: nowrap; /* Zapobiegaj zawijaniu tekstu w linku */
+}
+
+
+/* Styl dla li opakowującego formularz wylogowania w navbarze */
+.logout-li {
+    margin-left: 25px; /* zachowaj odstęp od poprzednich linków */
+}
+/* Styl dla przycisku Wyloguj */
+.logout-button {
+    background: none;
+    border: none;
+    padding: 5px 0; /* padding jak linki */
+    font: inherit;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+    display: block;
+}
+.logout-button:hover {
+    color: #b3e5fc;
+}
+
+
+/* Media Query dla mniejszych ekranów (poniżej 768px) */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px; /* Mniejszy padding navbara na małych ekranach */
+    }
+
+    .navbar-content {
+        flex-wrap: wrap; /* Pozwól elementom przełamywać wiersze */
+    }
+
+    .hamburger-icon {
+        display: block; /* Pokaż ikonę hamburgera */
+    }
+
+    /* Główna lista menu staje się pionowym panelem mobilnym */
+    .navbar-menu {
+        /* display: flex; Zmień na flexbox */
+        flex-direction: column; /* Elementy ułożone w kolumnie */
+        position: absolute; /* Pozycjonowanie absolutne względem navbara */
+        top: 100%; /* Pod navbarem */
+        right: 0; /* Przy prawej krawędzi */
+        background-color: #0277bd; /* Tło menu (ten sam kolor co navbar) */
+        width: 220px; /* Szerokość menu mobilnego */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        /* Usunieto transform transition stąd, będzie tylko w .navbar-menu.active */
+        z-index: 10;
+        /* Usuń zaokrąglenia */
+        border-radius: 0;
+
+        /* Style dla animacji wysuwania panelu mobilnego */
+        transform: translateX(100%); /* Startowa pozycja (poza ekranem) */
+        transition: transform 0.3s ease-in-out; /* Animacja przesuwania */
+        /* Też ukryj na małym ekranie domyślnie */
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        /* Usunięto display: flex; bo to koliduje z ukrywaniem */
+    }
+
+    /* Aktywny stan menu mobilnego (pokazany) */
+    .navbar-menu.active {
+        transform: translateX(0); /* Pozycja końcowa (na ekranie) */
+        max-height: 100vh; /* Duża wartość, żeby pomieścić zawartość */
+        opacity: 1;
+        visibility: visible;
+        /* Dodaj display: flex dopiero po animacji, żeby nie psuć jej */
+        display: flex; /* Ustawiamy flexbox, żeby elementy były w kolumnie */
+        /* Dodatkowo można opóźnić display, żeby pojawił się po animacji, ale max-height/opacity/visibility jest zazwyczaj wystarczające */
+    }
+
+    /* Style dla elementów listy w menu mobilnym */
+    .navbar-menu li {
+        margin: 0; /* Usuń marginesy poziome */
+        width: 100%; /* Elementy menu zajmują całą szerokość panelu */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Delikatna linia */
+        position: static; /* Usuń pozycjonowanie absolutne */
+    }
+    .navbar-menu li:last-child {
+        border-bottom: none; /* Ostatni element bez linii */
+    }
+
+    /* Style dla linków i przycisków w menu mobilnym */
+    .navbar-menu a,
+    .navbar-menu .logout-button,
+    .navbar-menu .services-button {
+        padding: 12px 20px; /* Większy padding dla klikalności */
+        width: 100%; /* Upewnij się, że wypełniają li */
+        box-sizing: border-box; /* Padding wewnątrz szerokości */
+        text-align: left; /* Wyrównaj tekst do lewej */
+    }
+
+    /* Style dla rozwijanego menu Badań w trybie mobilnym */
+    .navbar-services .services-dropdown {
+        /* display: none; Usunięto display: none */
+        position: static; /* Zmień pozycjonowanie na statyczne */
+        background-color: rgba(0, 0, 0, 0.1); /* Lekko ciemniejsze tło */
+        box-shadow: none; /* Bez cienia */
+        border-radius: 0; /* Bez zaokrągleń */
+        width: 100%; /* Zajmij całą szerokość rodzica (li) */
+        /* Style do animacji w mobilnym */
+        max-height: 0; /* Startowa wysokość (ukryte) */
+        opacity: 0; /* Startowa przezroczystość */
+        visibility: hidden; /* Ukryj element dla czytników ekranu gdy zwinięty */
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Animacja */
+    }
+
+    /* Pokaż rozwijane menu Badań w trybie mobilnym, gdy element nadrzędny (li.navbar-services) ma klasę 'expanded' */
+    .navbar-services.expanded > .services-dropdown {
+        max-height: 500px; /* Wystarczająco duża wartość */
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Style dla elementów listy w rozwijanym menu Badań w trybie mobilnym */
+    .navbar-services .services-dropdown li {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Bardzo delikatna linia */
+    }
+    .navbar-services .services-dropdown li:last-child {
+        border-bottom: none;
+    }
+    /* Style dla linków w rozwijanym menu Badań w trybie mobilnym (wcięcie) */
+    .navbar-services .services-dropdown a {
+        padding: 8px 30px; /* Zwiększ padding od lewej, żeby zrobić wcięcie */
+        font-size: 0.9em; /* Mniejsza czcionka */
+        border-bottom: none; /* Usuń dolną linię linku w dropdownie */
+    }
+
+    /* Usuń dolną linię pod przyciskiem Badania, gdy menu jest rozwinięte w trybie mobilnym */
+    .navbar-services.expanded {
+        border-bottom: none;
+    }
+}
