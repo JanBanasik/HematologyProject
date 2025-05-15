@@ -1,0 +1,35 @@
+<!-- src/main/resources/templates/fragments/navbar.html -->
+<nav class="navbar" th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="navbar-content"> <!-- Dodajemy wrapper dla lepszej kontroli layoutu -->
+        <a href="/" class="app-title">Aplikacja Medyczna</a> <!-- Tytuł/Logo jako link do strony głównej -->
+
+        <!-- Przycisk Hamburger Menu -->
+        <button class="hamburger-icon" id="hamburgerBtn" aria-label="Otwórz menu">
+            ☰ <!-- Unicode dla ikony hamburgera -->
+        </button>
+
+        <!-- Lista linków menu (na większych ekranach będzie pozioma, na mniejszych ukryta/pionowa) -->
+        <ul class="navbar-menu" id="navbarMenu">
+            <!-- Elementy menu pozostają takie same -->
+            <li><a href="/">Strona Główna</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/anemia/form">Anemia Predykcja</a></li>
+            <li sec:authorize="isAuthenticated()"><a href="/anemia/history">Historia</a></li>
+            <!-- W przyszłości dodasz tutaj kolejne badania, np.: -->
+            <!-- <li sec:authorize="isAuthenticated()"><a href="/cukrzyca/form">Cukrzyca Predykcja</a></li> -->
+
+            <!-- Link Logowania - pokaż tylko dla użytkowników niezalogowanych -->
+            <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Zaloguj</a></li>
+
+            <!-- Link Rejestracji - pokaż tylko dla użytkowników niezalogowanych -->
+            <li sec:authorize="isAnonymous()"><a th:href="@{/register}">Zarejestruj</a></li>
+
+            <!-- Link Wylogowania - pokaż tylko dla użytkowników zalogowanych -->
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="logout-button">Wyloguj</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>

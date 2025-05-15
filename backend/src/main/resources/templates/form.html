@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
+<head>
+    <title>Formularz Predykcji Anemii</title>
+    <style>
+        /* Style specyficzne dla formularza, jeśli potrzebne.
+           Większość stylów formularza jest w layout.html */
+    </style>
+</head>
+<body>
+<div class="page-content">
+    <h2>Formularz Predykcji Anemii</h2>
+    <form id="blood-form" class="form-container">
+        <!-- Dodano etykiety (<label>) i id do pól input dla lepszej dostępności i stylizacji -->
+        <div class="form-group">
+            <label for="RBC">RBC:</label>
+            <input type="number" step="any" name="RBC" id="RBC" required placeholder="np. 4.5">
+        </div>
+        <div class="form-group">
+            <label for="HGB">HGB:</label>
+            <input type="number" step="any" name="HGB" id="HGB" required placeholder="np. 14">
+        </div>
+        <div class="form-group">
+            <label for="HCT">HCT:</label>
+            <input type="number" step="any" name="HCT" id="HCT" required placeholder="np. 42">
+        </div>
+        <div class="form-group">
+            <label for="MCV">MCV:</label>
+            <input type="number" step="any" name="MCV" id="MCV" required placeholder="np. 90">
+        </div>
+        <div class="form-group">
+            <label for="MCH">MCH:</label>
+            <input type="number" step="any" name="MCH" id="MCH" required placeholder="np. 30">
+        </div>
+        <div class="form-group">
+            <label for="MCHC">MCHC:</label>
+            <input type="number" step="any" name="MCHC" id="MCHC" required placeholder="np. 33">
+        </div>
+        <div class="form-group">
+            <label for="RDW">RDW:</label>
+            <input type="number" step="any" name="RDW" id="RDW" required placeholder="np. 13">
+        </div>
+        <div class="form-group">
+            <label for="PLT">PLT:</label>
+            <input type="number" step="any" name="PLT" id="PLT" required placeholder="np. 250">
+        </div>
+        <div class="form-group">
+            <label for="WBC">WBC:</label>
+            <input type="number" step="any" name="WBC" id="WBC" required placeholder="np. 7">
+        </div>
+
+        <button type="submit">Przewidź</button>
+    </form>
+
+    <div id="result"></div>
+
+    <!-- Dodano linki do historii i nowego formularza -->
+    <div class="action-links"> <!-- Upewnij się, że linki są w div z klasą action-links -->
+        <a href="/anemia/history">Zobacz historię</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('blood-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const json = {};
+        formData.forEach((value, key) => {
+            json[key] = parseFloat(value);
+        });
+
+        document.getElementById('result').innerText = 'Przewidywanie...'; // Feedback dla użytkownika
+
+        console.log('Sending to /predict:', JSON.stringify(json));
+
+        try {
+            const response = await fetch('http://localhost:8000/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(json)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('FastAPI error response:', errorText);
+                throw new Error(`Błąd serwera FastAPI: ${response.status} - ${errorText}`);
+            }
+
+            const result = await response.json();
+            console.log('FastAPI response:', result);
+
+            let epicrisisText = result.epicrisis ? `\nEpikryza medyczna: ${result.epicrisis}` : '';
+
+            document.getElementById('result').innerText = `Przewidziano: ${result.prediction} (pewność: ${result.probability ? result.probability.toFixed(2) : 'N/A'})` + epicrisisText;
+
+
+            if (result.prediction && result.probability !== undefined) {
+                const resultData = {
+                    ...json,
+                    prediction: result.prediction,
+                    probability: result.probability,
+                    // Dodaj epicrisis jeśli istnieje i chcesz go zapisać
+                    epicrisis: result.epicrisis || null
+                };
+
+                console.log('Saving result to backend:', JSON.stringify(resultData));
+                const saveResponse = await fetch('/anemia/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(resultData)
+                });
+
+                if (!saveResponse.ok) {
+                    const saveErrorText = await saveResponse.text();
+                    console.error('Backend save error response:', saveErrorText);
+                    throw new Error(`Błąd zapisu na backendzie: ${saveResponse.status} - ${saveErrorText}`);
+                }
+
+                console.log('Result saved successfully.');
+
+            } else {
+                console.error('Prediction or probability missing in response', result);
+                document.getElementById('result').innerText = 'Błąd: Nie otrzymano prawidłowej odpowiedzi od serwera predykcji.';
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            document.getElementById('result').innerText = `Wystąpił błąd: ${error.message}`;
+        }
+    });
+</script>
+</body>
+</html>

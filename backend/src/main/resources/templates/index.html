@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
+<head>
+    <title>Strona Główna</title>
+    <style>
+        /* Możesz dodać tutaj style specyficzne tylko dla index.html,
+           ale globalne style z layout.html są już dostępne */
+        .test-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+        .test-list li {
+            margin-bottom: 20px;
+        }
+        .test-link { /* Styl przycisku */
+            display: inline-block;
+            background-color: #4fc3f7; /* Jasny niebieski */
+            color: white !important; /* Użyj !important aby nadpisać style linków z navbara */
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .test-link:hover {
+            background-color: #29b6f6; /* Nieco ciemniejszy niebieski na hover */
+            transform: translateY(-2px);
+        }
+        .test-link:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+<!-- Ta sekcja .page-content zostanie wstawiona do miejsca oznaczonego jako ${content} w layout.html -->
+<div class="page-content">
+    <h1>Witaj w Aplikacji Medycznej</h1>
+    <p>Tutaj możesz skorzystać z dostępnych narzędzi do predykcji i analizy badań.</p>
+    <h2>Dostępne badania / predykcje:</h2>
+    <ul class="test-list">
+        <li>
+            <a href="/anemia/form" class="test-link">Predykcja Anemii</a>
+        </li>
+        <!-- W przyszłości można dodać więcej linków do innych badań -->
+    </ul>
+</div>
+
+<!-- Skrypty specyficzne dla strony (w tym przypadku brak) -->
+<script></script>
+</body>
+</html>

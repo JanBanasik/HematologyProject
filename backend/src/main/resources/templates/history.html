@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
+<head>
+    <title>Historia Predykcji Anemii</title>
+    <style>
+        /* Style specyficzne dla historii, jeśli potrzebne.
+           Większość stylów tabeli jest w layout.html */
+    </style>
+</head>
+<body>
+<div class="page-content">
+    <h2>Historia Predykcji Anemii</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Predykcja</th>
+            <th>Pewność</th>
+            <th>Data</th>
+            <!-- Można dodać kolumny z danymi wejściowymi, jeśli chcesz -->
+            <!-- <th>RBC</th>... -->
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${results}">
+            <td th:text="${r.id}"></td>
+            <td th:text="${r.prediction}"></td>
+            <td th:text="${r.probability != null ? #numbers.formatDecimal(r.probability, 0, 2) : 'N/A'}"></td> <!-- Formatowanie prawdopodobieństwa -->
+            <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td> <!-- Formatowanie daty/czasu -->
+            <!-- Tutaj ewentualnie komórki z danymi wejściowymi -->
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="action-links">
+        <a href="/anemia/form">Nowa predykcja</a>
+    </div>
+
+</div>
+<script></script> <!-- Pusty tag script dla zgodności z layoutem -->
+</body>
+</html>

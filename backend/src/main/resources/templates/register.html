@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
+<head>
+  <title>Rejestracja</title>
+  <style>
+    /* Style specyficzne dla strony rejestracji */
+    .registration-container {
+      max-width: 400px;
+      margin: 30px auto; /* Centrum na stronie */
+      padding: 30px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .registration-container h2 {
+      color: #0277bd;
+      margin-bottom: 25px;
+    }
+
+    .registration-form .form-group { /* Używamy tych samych klas co w formularzu anemii */
+      margin-bottom: 20px;
+      text-align: left; /* Etykiety i pola wyrównane do lewej */
+    }
+
+    .registration-form label { /* Używamy tych samych klas co w formularzu anemii */
+      display: block; /* Etykieta nad polem */
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #01579b;
+    }
+
+    .registration-form input[type="text"],
+    .registration-form input[type="password"] {
+      width: 100%; /* Pola zajmują całą szerokość */
+      padding: 10px;
+      border: 1px solid #b3e5fc;
+      border-radius: 4px;
+      font-size: 1em;
+      box-sizing: border-box; /* Padding wewnątrz szerokości */
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .registration-form input[type="text"]:focus,
+    .registration-form input[type="password"]:focus {
+      border-color: #0288d1;
+      box-shadow: 0 0 5px rgba(2, 136, 209, 0.5);
+      outline: none;
+    }
+
+    .registration-form button[type="submit"] { /* Używamy tych samych klas co w formularzu anemii */
+      background-color: #4fc3f7;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      width: 100%; /* Przycisk zajmuje całą szerokość */
+    }
+
+    .registration-form button[type="submit"]:hover {
+      background-color: #29b6f6;
+      transform: translateY(-2px);
+    }
+
+    .registration-form button[type="submit"]:active {
+      transform: translateY(0);
+    }
+
+    /* Style dla komunikatów */
+    .alert-danger {
+      color: #b71c1c; /* Ciemna czerwień */
+      background-color: #ffcdd2; /* Bardzo jasna czerwień */
+      border: 1px solid #ef9a9a; /* Jasna czerwień */
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      text-align: left;
+    }
+    .alert-info {
+      color: #01579b; /* Ciemniejszy niebieski */
+      background-color: #b3e5fc; /* Jasny niebieski */
+      border: 1px solid #81d4fa; /* Medium niebieski */
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      text-align: left;
+    }
+
+    .login-link-text {
+      margin-top: 20px;
+      font-size: 0.9em;
+    }
+    .login-link-text a {
+      color: #0277bd; /* Medium blue */
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .login-link-text a:hover {
+      text-decoration: underline;
+    }
+
+
+  </style>
+</head>
+<body>
+<div class="page-content">
+  <div class="registration-container">
+    <h2>Załóż konto</h2>
+
+    <!-- Komunikat o błędzie rejestracji -->
+    <div th:if="${registrationError}" class="alert-danger">
+      <p th:text="${registrationError}"></p>
+    </div>
+
+    <!-- Formularz rejestracji -->
+    <!-- th:object="${user}" wiąże formularz z obiektem User z modelu -->
+    <!-- th:action="@{/register}" wysyła POST na /register -->
+    <form th:object="${user}" th:action="@{/register}" method="post" class="registration-form">
+
+      <div class="form-group">
+        <label for="username">Nazwa użytkownika:</label>
+        <!-- th:field="*{username}" wiąże to pole z polem username obiektu User -->
+        <input type="text" id="username" th:field="*{username}" required>
+        <!-- Można dodać tu wyświetlanie błędów walidacji, jeśli używasz @Valid -->
+      </div>
+      <div class="form-group">
+        <label for="password">Hasło:</label>
+        <!-- th:field="*{password}" wiąże to pole z polem password obiektu User -->
+        <input type="password" id="password" th:field="*{password}" required>
+        <!-- Można dodać tu wyświetlanie błędów walidacji -->
+      </div>
+      <!-- Pole ukryte dla tokena CSRF -->
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+      <button type="submit">Zarejestruj</button>
+    </form>
+
+    <p class="login-link-text">
+      Masz już konto? <a th:href="@{/login}">Zaloguj się tutaj</a>
+    </p>
+  </div>
+</div>
+<script></script> <!-- Pusty tag script dla zgodności z layoutem -->
+</body>
+</html>

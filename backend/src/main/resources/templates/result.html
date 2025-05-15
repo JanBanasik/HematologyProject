@@ -1,0 +1,36 @@
+<!-- src/main/resources/templates/result.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})" lang="pl">
+<head>
+    <title>Wynik Predykcji Anemii</title>
+    <style>
+        /* Style specyficzne dla wyniku, jeśli potrzebne */
+        .result-display p {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .result-display strong {
+            color: #0277bd; /* Medium blue */
+        }
+    </style>
+</head>
+<body>
+<div class="page-content">
+    <h2>Wynik Predykcji Anemii</h2>
+    <!-- Zawartość wyniku -->
+    <div class="result-display">
+        <p><strong>Predykcja:</strong> <span th:text="${result.prediction}"></span></p>
+        <p><strong>Pewność:</strong> <span th:text="${result.probability != null ? #numbers.formatDecimal(result.probability, 0, 2) : 'N/A'}"></span></p>
+        <!-- Jeśli do modelu BloodTestResult dodasz pole epicrisis i będzie ono przekazywane, można je tu wyświetlić -->
+        <!-- <p th:if="${result.epicrisis}"><strong>Epikryza:</strong> <span th:text="${result.epicrisis}"></span></p> -->
+    </div>
+
+    <div class="action-links">
+        <a href="/anemia/form">Przewidź ponownie</a>
+        <a href="/anemia/history">Zobacz historię</a>
+    </div>
+</div>
+<script></script> <!-- Pusty tag script dla zgodności z layoutem -->
+</body>
+</html>
