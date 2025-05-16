@@ -1,45 +1,74 @@
 <!-- src/main/resources/templates/history.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
     <title>Moja Historia Predykcji Anemii</title>
-    <style>
-        /* Style specyficzne dla historii, jeśli potrzebne.
-           Większość stylów tabeli jest w global.css */
-    </style>
+    <style></style> <!-- Pusty tag style przekazany jako ${styles} -->
 </head>
 <body>
 <div class="page-content">
     <h2>Moja Historia Predykcji Anemii</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Predykcja</th>
-            <th>Pewność</th>
-            <th>Data</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="r : ${results}">
-            <td th:text="${r.id}"></td>
-            <!-- ... komórki z danymi wejściowymi ... -->
-            <td th:text="${r.prediction}"></td>
-            <td th:text="${r.probability != null ? #numbers.formatDecimal(r.probability, 0, 2) : 'N/A'}"></td>
-            <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
-            <!-- <td sec:authorize="hasRole('ADMIN')" th:text="${r.user != null ? r.user.username : 'Anonim'}"></td> -->
-        </tr>
-        </tbody>
-    </table>
 
-    <div class="action-links">
-        <a href="/anemia/form">Nowa predykcja</a>
+    <!-- Komunikat ładowania lub braku wyników (z history.tsx) -->
+    <!-- Możesz dodać tu warunkowe wyświetlanie wskaźnika ładowania, jeśli zaimplementujesz go w JS/CSS -->
+    <!-- <div class="text-center py-8"><div class="animate-pulse text-[#01579b]">Ładowanie historii...</div></div> -->
+
+    <!-- Tabela historii -->
+    <!-- Klasy z history.tsx odtworzone w CSS -->
+    <div class="overflow-x-auto"> <!-- Wrapper div dla responsywności tabeli -->
+        <table class="w-full border-collapse">
+            <thead>
+            <tr class="bg-[#b3e5fc] text-[#01579b]">
+                <th class="p-3 text-left">ID</th>
+                <!-- Możesz dodać tu kolumny z danymi wejściowymi, np. RBC, HGB itp. -->
+                <th class="p-3 text-left">Predykcja</th>
+                <th class="p-3 text-left">Pewność</th>
+                <th class="p-3 text-left">Data</th>
+                <!-- Opcjonalna kolumna Użytkownik - pokaż tylko adminom? Lub zawsze? -->
+                <!-- Dla historii zalogowanego użytkownika, wyświetlanie tej kolumny jest opcjonalne -->
+                <!-- Jeśli chcesz wyświetlać nazwę użytkownika, dodaj: -->
+                <!-- <th class="p-3 text-left">Użytkownik</th> -->
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${results}" th:classappend="${rStat.even} ? 'bg-[#e0f7fa]' : 'bg-white'"> <!-- Klasy z history.tsx -->
+                <td class="p-3 border-b border-[#e0f7fa]" th:text="${r.id}"></td>
+                <!-- ... komórki z danymi wejściowymi ... -->
+                <td class="p-3 border-b border-[#e0f7fa]" th:text="${r.prediction}"></td>
+                <td class="p-3 border-b border-[#e0f7fa]" th:text="${r.probability != null ? #numbers.formatDecimal(r.probability, 0, 2) : 'N/A'}"></td> <!-- Formatowanie prawdopodobieństwa -->
+                <td class="p-3 border-b border-[#e0f7fa]" th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td> <!-- Formatowanie daty/czasu -->
+                <!-- Opcjonalna komórka z nazwą użytkownika -->
+                <!-- Jeśli chcesz wyświetlać nazwę użytkownika, dodaj: -->
+                <!-- <td class="p-3 border-b border-[#e0f7fa]" th:text="${r.user != null ? r.user.username : 'Anonim'}"></td> -->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Komunikat braku wyników -->
+    <div th:if="${results == null or #lists.isEmpty(results)}" class="text-center py-8 bg-[#e0f7fa] rounded-md">
+        <p class="text-[#01579b]">Nie masz jeszcze żadnych zapisanych wyników.</p>
+    </div>
+
+
+    <div class="action-links mt-6"> <!-- Klasy z history.tsx odtworzone w CSS -->
+        <!-- Klasy przycisku z history.tsx odtworzone w CSS, stylizowane przez .action-links -->
+        <a
+                href="/anemia/form"
+                class="bg-[#4fc3f7] hover:bg-[#29b6f6] text-white py-2 px-6 rounded-md font-bold transition-all hover:translate-y-[-2px] active:translate-y-0"
+        >
+            Nowa predykcja
+        </a>
     </div>
 
 </div>
 <script>
-
+    // Opcjonalnie JS do animacji wierszy tabeli
+    // Zaimplementowano w global.js w poprzedniej odpowiedzi (szukaj "historyTable")
+    // Upewnij się, że tabela w history.html ma ID="historyTable" jeśli chcesz tej animacji
+    // <table id="historyTable" class="w-full border-collapse">
 </script>
 </body>
 </html>

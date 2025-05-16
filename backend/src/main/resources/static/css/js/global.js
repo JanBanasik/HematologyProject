@@ -1,81 +1,129 @@
-// src/main/resources/static/js/global.js
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobile Navigation Toggle
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const navbarMenu = document.getElementById('navbarMenu');
-    const servicesBtn = document.getElementById('servicesBtn');
-    const navbarServicesLi = servicesBtn ? servicesBtn.closest('.navbar-services') : null;
 
-    // Obsługa kliknięcia hamburgera
     if (hamburgerBtn && navbarMenu) {
         hamburgerBtn.addEventListener('click', function() {
-            // Toggle klasy 'active' na liście menu (dla panelu mobilnego)
-            navbarMenu.classList.toggle('active');
+            navbarMenu.classList.toggle('show');
+        });
+    }
 
-            // Zmień atrybuty ARIA
-            const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
-            hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
+    // Services Dropdown Toggle
+    const servicesBtn = document.getElementById('servicesBtn');
+    const servicesDropdown = document.getElementById('servicesDropdown');
 
-            // Zablokuj scrollowanie tła
-            document.body.classList.toggle('menu-open');
-
-            // Zwiń menu Badań po otwarciu/zamknięciu głównego menu mobilnego
-            if (navbarServicesLi && navbarServicesLi.classList.contains('expanded')) {
-                navbarServicesLi.classList.remove('expanded');
-            }
+    if (servicesBtn && servicesDropdown) {
+        servicesBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            servicesBtn.classList.toggle('active');
+            servicesDropdown.classList.toggle('show');
         });
 
-        // Opcjonalnie: Zamknij menu po kliknięciu poza nim
-        document.addEventListener('click', function(event) {
-            const isClickInsideMenu = navbarMenu.contains(event.target) || hamburgerBtn.contains(event.target);
-
-            if (!isClickInsideMenu && navbarMenu.classList.contains('active')) {
-                navbarMenu.classList.remove('active');
-                hamburgerBtn.setAttribute('aria-expanded', 'false');
-                document.body.classList.remove('menu-open');
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.navbar-services') && servicesDropdown.classList.contains('show')) {
+                servicesDropdown.classList.remove('show');
+                servicesBtn.classList.remove('active');
             }
         });
+    }
 
-        // Opcjonalnie: Zamknij główne menu po kliknięciu linku
-        navbarMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() {
-                // Opóźnij zamknięcie menu, aby link miał czas zadziałać
-                setTimeout(() => {
-                    navbarMenu.classList.remove('active');
-                    hamburgerBtn.setAttribute('aria-expanded', 'false');
-                    document.body.classList.remove('menu-open');
-                    // Zwiń menu Badań po zamknięciu głównego menu
-                    if (navbarServicesLi && navbarServicesLi.classList.contains('expanded')) {
-                        navbarServicesLi.classList.remove('expanded');
-                    }
-                }, 100); // Krótkie opóźnienie
+    // Add smooth scrolling to all links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
             });
         });
+    });
+
+    // Form field animations
+    const formGroups = document.querySelectorAll('.form-group');
+
+    formGroups.forEach(group => {
+        const input = group.querySelector('input, select, textarea');
+        if (input) {
+            input.addEventListener('focus', () => {
+                group.classList.add('active');
+            });
+
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    group.classList.remove('active');
+                }
+            });
+
+            // Set active class on load if field has value
+            if (input.value) {
+                group.classList.add('active');
+            }
+        }
+    });
+
+    // Add page transition effect
+    const pageContent = document.querySelector('.page-content');
+    if (pageContent) {
+        pageContent.classList.add('fade-in');
     }
 
-    // Logika rozwijania/zwijania menu Badań w trybie mobilnym (po kliknięciu przycisku "Badania")
-    if (servicesBtn && navbarServicesLi) {
-        servicesBtn.addEventListener('click', function(event) {
-            // Zapobiegaj domyślnej akcji (np. nawigacji, jeśli przycisk byłby linkiem)
-            event.preventDefault();
-            // Toggle klasy 'expanded' na nadrzędnym li
-            navbarServicesLi.classList.toggle('expanded');
+    // Automatically hide alerts after 5 seconds
+    const alerts = document.querySelectorAll('.alert-danger, .alert-info');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.style.opacity = '0';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 500);
+        }, 5000);
+    });
+
+    // Add result animation
+    const resultElement = document.getElementById('result');
+    if (resultElement && resultElement.innerHTML.trim() !== '') {
+        resultElement.classList.add('fade-in');
+    }
+
+    // Add active class to current nav link
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.navbar-menu a');
+
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+});
+
+// Form submission with loading state
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('blood-form');
+
+    if (form) {
+        form.addEventListener('submit', function() {
+            const submitButton = this.querySelector('button[type="submit"]');
+            if (submitButton) {
+                // Save original text
+                const originalText = submitButton.innerText;
+
+                // Change to loading state
+                submitButton.innerText = 'Przetwarzanie...';
+                submitButton.disabled = true;
+                submitButton.classList.add('loading');
+
+                // Reset button state after form submission
+                // This timeout is for visual effect, as the actual form submission 
+                // will navigate away or be handled by the form's submit handler
+                setTimeout(() => {
+                    submitButton.innerText = originalText;
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('loading');
+                }, 10000); // Failsafe timeout in case the form submission is not properly handled
+            }
         });
     }
-
-    // Logika JS do pobierania ciasteczka CSRF i dodawania go do nagłówków fetch
-    // Ta funkcja jest potrzebna w form.html, jeśli używasz tam fetch do /anemia/save
-    // Możesz ją przenieść do tego pliku global.js i wywołać z form.html
-    // lub zostawić w form.html, jeśli tylko tam jest używana.
-    // Poniżej kod tylko jako przypomnienie:
-    /*
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
-    // W form.html, przy fetch do /anemia/save:
-    // const csrfToken = getCookie('XSRF-TOKEN');
-    // const headers = { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': csrfToken };
-    // fetch('/anemia/save', { method: 'POST', headers: headers, body: JSON.stringify(resultData) });
-    */
 });

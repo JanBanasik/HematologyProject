@@ -2,6 +2,7 @@ import os
 import pickle
 import joblib
 import numpy as np
+import pandas as pd
 
 class Predictor:
     def __init__(self, model_path: str):
@@ -24,9 +25,7 @@ class Predictor:
 
     def predict(self, data: dict):
         # Przekształcanie wejścia do odpowiedniego formatu
-        input_features = np.array([[data[feature] for feature in [
-            'RBC', 'HGB', 'HCT', 'MCV', 'MCH', 'MCHC', 'RDW', 'PLT', 'WBC'
-        ]]])
+        input_features = pd.DataFrame([data])
 
         # Skalowanie i redukcja PCA
         input_scaled = self.scaler.transform(input_features)
@@ -42,5 +41,6 @@ class Predictor:
         return {
             "prediction": predicted_label,
             "probability": probability_of_predicted_class,
-            "probabilities": probabilities.tolist()
+            "probabilities": probabilities.tolist(),
+            "epicrisis": ""
         }

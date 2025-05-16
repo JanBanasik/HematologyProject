@@ -52,78 +52,132 @@
     </form>
 
     <div id="result"></div>
-    >
+
     <div class="action-links">
         <a href="/anemia/history">Zobacz historię</a>
     </div>
 </div>
 
 <script>
-    document.getElementById('blood-form').addEventListener('submit', async function (e) {
-        e.preventDefault();
+    // src/main/resources/templates/form.html -> Wewnątrz tagu <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bloodForm = document.getElementById('blood-form');
+        const resultDiv = document.getElementById('result');
 
-        const formData = new FormData(this);
-        const json = {};
-        formData.forEach((value, key) => {
-            json[key] = parseFloat(value);
-        });
-
-        document.getElementById('result').innerText = 'Przewidywanie...'; // Feedback dla użytkownika
-
-        console.log('Sending to /predict:', JSON.stringify(json));
-
-        try {
-            const response = await fetch('http://localhost:8000/predict', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(json)
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('FastAPI error response:', errorText);
-                throw new Error(`Błąd serwera FastAPI: ${response.status} - ${errorText}`);
-            }
-
-            const result = await response.json();
-            console.log('FastAPI response:', result);
-
-            let epicrisisText = result.epicrisis ? `\nEpikryza medyczna: ${result.epicrisis}` : '';
-
-            document.getElementById('result').innerText = `Przewidziano: ${result.prediction} (pewność: ${result.probability ? result.probability.toFixed(2) : 'N/A'})` + epicrisisText;
+        // FUNKCJA DO POBIERANIA CIASDECZKA CSRF (umieść ją tutaj lub w global.js i udostępnij globalnie)
+        // Upewnij się, że ta funkcja jest dostępna!
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null; // Zwróć null, jeśli ciasteczko nie znalezione
+        }
 
 
-            if (result.prediction && result.probability !== undefined) {
-                const resultData = {
-                    ...json,
-                    prediction: result.prediction,
-                    probability: result.probability,
-                    // Dodaj epicrisis jeśli istnieje i chcesz go zapisać
-                    epicrisis: result.epicrisis || null
-                };
+        if (bloodForm) {
+            bloodForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
 
-                console.log('Saving result to backend:', JSON.stringify(resultData));
-                const saveResponse = await fetch('/anemia/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(resultData)
+                const formData = new FormData(this);
+                const json = {};
+                formData.forEach((value, key) => {
+                    json[key] = parseFloat(value);
                 });
 
-                if (!saveResponse.ok) {
-                    const saveErrorText = await saveResponse.text();
-                    console.error('Backend save error response:', saveErrorText);
-                    throw new Error(`Błąd zapisu na backendzie: ${saveResponse.status} - ${saveErrorText}`);
+                if(resultDiv) resultDiv.innerText = 'Przewidywanie...';
+
+                try {
+                    // -- Fetch do FastAPI --
+                    const response = await fetch('http://localhost:8000/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(json)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('FastAPI error response:', errorText);
+                        throw new Error(`Błąd serwera FastAPI: ${response.status} - ${errorText}`);
+                    }
+
+                    const resultData = await response.json();
+                    console.log('FastAPI response:', resultData); // <-- SPRAWDŹ TEN LOG DOKŁADNIE W KONSOLI!
+
+                    let epicrisisText = resultData.epicrisis ? `\nEpikryza medyczna: ${resultData.epicrisis}` : '';
+                    const resultText = `Przewidziano: ${resultData.prediction} (pewność: ${resultData.probability ? resultData.probability.toFixed(2) : 'N/A'})${epicrisisText}`;
+
+                    if(resultDiv) {
+                        resultDiv.innerText = resultText;
+                        resultDiv.classList.add('animate-fade-in'); // Jeśli masz animacje CSS
+                    }
+
+                    // -- Fetch do backendu Spring Boot (ZAPIS) --
+                    // WARUNEK, KTÓRY OCENIAMY TERAZ JAKO PRAWDZIWY NA PODSTAWIE TWOICH LOGÓW
+                    if (resultData.prediction && resultData.probability != null) { // Zmieniono !== undefined na != null dla pewności
+                        const saveData = {
+                            ...json, // Dane wejściowe
+                            prediction: resultData.prediction,
+                            probability: resultData.probability,
+                            epicrisis: resultData.epicrisis || null
+                        };
+
+                        console.log('Saving result to backend:', JSON.stringify(saveData)); // <-- TEN LOG SIĘ POJAWIŁ!
+
+                        // *** SPRAWDŹ DOKŁADNIE PONIŻSZY BLOK KODU JS ***
+
+                        // POBIERZ TOKEN CSRF Z CIASDECZKA
+                        const csrfToken = getCookie('XSRF-TOKEN'); // <-- UŻYJ getCookie
+                        console.log('CSRF Token from cookie:', csrfToken); // <-- TEN LOG MUSI SIĘ POJAWIĆ TERAZ!
+
+                        if (!csrfToken) {
+                            console.warn('CSRF token cookie "XSRF-TOKEN" not found or empty.');
+                            if(resultDiv) resultDiv.innerText += `\nBłąd zapisu: brak tokena CSRF.`;
+                            // Możesz tutaj zakończyć próbę zapisu, ponieważ i tak się nie powiedzie.
+                            return; // Zakończ funkcję tutaj, jeśli brak tokenu
+                        } else {
+                            // USTAWIJ NAGŁÓWKI, W TYM NAGŁÓWEK CSRF
+                            const headers = new Headers(); // Użyj obiektu Headers
+                            headers.append('Content-Type', 'application/json'); // Użyj append
+                            headers.append('X-XSRF-TOKEN', csrfToken); // <-- TEN NAGŁÓWEK MUSI BYĆ DODANY!
+
+                            console.log('Fetch headers for save:', Object.fromEntries(headers.entries())); // <-- TEN LOG MUSI SIĘ POJAWIĆ I POKAZAĆ NAGŁÓWEK
+
+                            const saveResponse = await fetch('/anemia/save', {
+                                method: 'POST',
+                                headers: headers, // <-- Upewnij się, że używasz tego obiektu Headers!
+                                body: JSON.stringify(saveData)
+                            });
+
+                            if (!saveResponse.ok) {
+                                const saveErrorText = await saveResponse.text();
+                                console.error('Backend save error response:', saveResponse); // Loguj cały obiekt odpowiedzi
+                                console.error('Backend save error text:', saveErrorText);
+
+                                if(resultDiv) {
+                                    if(saveResponse.status === 403) {
+                                        resultDiv.innerText += `\nBłąd zapisu: Odmowa dostępu (403). Sprawdź CSRF token/konfigurację.`;
+                                    } else {
+                                        resultDiv.innerText += `\nBłąd zapisu na backendzie: ${saveResponse.status}`;
+                                    }
+                                }
+                            } else {
+                                console.log('Result saved successfully.');
+                                // Tu można dodać toast o zapisie
+                            }
+                        }
+
+
+                    } else {
+                        console.error('Prediction or probability missing in response from FastAPI', resultData);
+                        if(resultDiv) resultDiv.innerText = 'Błąd: Nie otrzymano prawidłowej odpowiedzi z danymi predykcji.';
+                    }
+                } catch (error) {
+                    console.error('Global fetch error or FastAPI error:', error);
+                    if(resultDiv) resultDiv.innerText = `Wystąpił błąd: ${error instanceof Error ? error.message : 'Nieznany błąd'}`;
+                } finally {
+                    // ... finally block ...
                 }
-
-                console.log('Result saved successfully.');
-
-            } else {
-                console.error('Prediction or probability missing in response', result);
-                document.getElementById('result').innerText = 'Błąd: Nie otrzymano prawidłowej odpowiedzi od serwera predykcji.';
-            }
-        } catch (error) {
-            console.error('Fetch error:', error);
-            document.getElementById('result').innerText = `Wystąpił błąd: ${error.message}`;
+            });
         }
     });
 </script>

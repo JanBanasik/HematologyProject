@@ -13,7 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
 
     <!-- Fragment do wstawienia dodatkowych stylów specyficznych dla strony (przekazywany z plików "dzieci") -->
-    <!-- MUSI BYĆ POZA BLOKIEM style (którego już nie ma), ale wciąż w head -->
+    <!-- MUSI BYĆ POZA BLOKAMI style, ale wciąż w head -->
     <!-- Zmienna ${styles} zostanie zastąpiona np. zawartością tagu <style> z pliku form.html -->
     <th:block th:replace="${styles}"></th:block>
 
