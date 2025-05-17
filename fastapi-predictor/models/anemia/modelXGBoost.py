@@ -1,15 +1,16 @@
 import os
+
 import joblib
-from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score
-from preprocess.anemia import preprocess
-from sklearn.model_selection import train_test_split
-import preprocess.anemia.preprocess as preprocessData
-from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
-from sklearn.preprocessing import label_binarize
-from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import roc_curve, auc
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
+from xgboost import XGBClassifier
+
+import preprocess.anemia.preprocess as preprocessData
+from preprocess.anemia import preprocess
 
 name = os.path.basename(__file__)[:-3]
 print(name)

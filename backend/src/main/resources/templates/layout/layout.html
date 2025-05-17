@@ -1,41 +1,39 @@
-<!-- src/main/resources/templates/layout/layout.html -->
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
       th:fragment="layout(title, styles, content, scripts)" lang="pl">
 <head>
     <meta charset="UTF-8">
-    <!-- Fragment do wstawienia tytułu strony przekazanego jako parametr -->
-    <title th:replace="${title}">Domyślny Tytuł Aplikacji Medycznej</title> <!-- Upewnij się, że jest tylko jeden taki tag TITLE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">Domyślny Tytuł Aplikacji Medycznej</title>
 
-    <!-- Linki do globalnych plików CSS -->
+    <!-- Globalne pliki CSS -->
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
 
-    <!-- Fragment do wstawienia dodatkowych stylów specyficznych dla strony (przekazywany z plików "dzieci") -->
-    <!-- MUSI BYĆ POZA BLOKAMI style, ale wciąż w head -->
-    <!-- Zmienna ${styles} zostanie zastąpiona np. zawartością tagu <style> z pliku form.html -->
+    <!-- Style specyficzne dla strony -->
     <th:block th:replace="${styles}"></th:block>
 
+    <!-- Meta tagi CSRF dla JS -->
+    <meta name="_csrf_parameterName" th:content="${_csrf.parameterName}" sec:authorize="isAuthenticated()">
+    <meta name="_csrf_token" th:content="${_csrf.token}" sec:authorize="isAuthenticated()">
 </head>
 <body>
-<!-- Fragment do wstawienia navbara (wstawiany z pliku fragments/navbar.html) -->
-<!-- Użyj nowej składni ~{} -->
+<!-- Navbar -->
 <div th:insert="~{fragments/navbar :: navbar}"></div>
 
-<!-- Główny kontener na treść strony -->
+<!-- Główny kontener treści -->
 <div class="container">
-    <!-- Fragment do wstawienia treści specyficznej dla strony przekazanej jako parametr -->
-    <!-- Zmienna ${content} zostanie zastąpiona np. zawartoscia <div class="page-content"> z pliku form.html -->
-    <th:block th:replace="${content}"></th:block>
+    <div class="page-content">
+        <th:block th:replace="${content}"></th:block>
+    </div>
 </div>
 
-<!-- Fragment do wstawienia skryptów specyficznych dla strony (przekazywany z plików "dzieci") -->
-<!-- Zmienna ${scripts} zostanie zastąpiona np. zawartoscia <script> z pliku form.html -->
+<!-- Skrypty specyficzne dla strony -->
 <th:block th:replace="${scripts}"></th:block>
 
-<!-- Link do globalnego pliku JavaScript -->
+<!-- Globalny JavaScript -->
 <script th:src="@{/js/global.js}"></script>
-
 </body>
 </html>

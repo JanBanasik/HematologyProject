@@ -2,93 +2,88 @@
 package com.agh.anemia.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections; // Dla prostego przypadku jednej roli
+import java.util.Collections;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "users") // Nazwa tabeli w bazie danych
+@Table(name = "users") // Domyślnie nazwa tabeli byłaby "user", co może być słowem kluczowym SQL
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true) // Nazwa użytkownika musi być unikalna
     private String username;
 
     @Column(nullable = false)
-    private String password; // Zapisane hasło będzie zaszyfrowane
+    private String password; // Zapisane hasło będzie zaszyfrowane (haszowane)
 
-    // DODAJ NOWE POLA
+    // GETTERY I SETTERY DLA NOWYCH PÓL
+    // DODAJ LUB ZMODYFIKUJ POLE EMAIL Z OGRANICZENIEM UNIKALNOŚCI
+
+    @Column(nullable = false, unique = true) // Email musi być unikalny i nie może być NULL
+    private String email;
+
+    // Możesz dodać inne pola, np. imię, nazwisko (widzę je w Twoim register.html)
+
     private String firstName;
+
     private String lastName;
-    private String email; // Można dodać validację formatu emaila, ale na razie pomińmy dla prostoty
 
-
-    private String role = "USER"; // Domyślna rola
-
-    // Relacja One-to-Many do wyników badań (opcjonalne do zdefiniowania w encji User,
-    // ale jasniej pokazuje model - jeden user ma wiele wyników)
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<BloodTestResult> bloodTestResults; // Zostawiamy zakomentowane dla prostoty
-
+    private String role = "USER"; // Domyślna rola to USER
 
     // Konstruktor domyślny wymagany przez JPA
     public User() {
     }
 
-    // Konstruktor dla tworzenia użytkownika (można dodać więcej pól)
-    public User(String username, String password) {
+    // Zaktualizuj konstruktory, jeśli dodajesz nowe pola
+    public User(String username, String password, String role, String email, String firstName, String lastName) {
         this.username = username;
         this.password = password;
-        this.role = "USER";
-    }
-    // Konstruktor z wszystkimi polami (opcjonalny)
-    public User(String username, String password, String firstName, String lastName, String email) {
-        this.username = username;
-        this.password = password;
+        this.role = role;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
-        this.role = "USER";
     }
 
 
-    // Getters and Setters (dla wszystkich pól)
+    // Getters and Setters (dla wszystkich pól, w tym nowych)
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    @Override public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    @Override public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    @Override
+    public String getUsername() { return username; }
 
-    // Getters dla UserDetails
-    @Override public Collection<? extends GrantedAuthority> getAuthorities() { return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)); }
+    @Override
+    public String getPassword() { return password; }
+
+
+    // Implementacja metod UserDetails dla Spring Security (bez zmian)
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+    }
+
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return true; }
+
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
+                ", email='" + email + '\'' + // Dodaj email do toString
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
                 ", role='" + role + '\'' +
                 '}';
     }

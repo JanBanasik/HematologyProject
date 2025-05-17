@@ -1,8 +1,9 @@
-
+// src/main/java/com/agh/anemia/service/AnemiaService.java
 package com.agh.anemia.service;
 
+import com.agh.anemia.dto.BloodTestPredictionDto;
 import com.agh.anemia.model.BloodTestResult;
-import com.agh.anemia.model.PredictionResponse;
+import com.agh.anemia.model.PredictionResponse; // Prawdopodobnie używane tylko w callFastApi
 import com.agh.anemia.model.User;
 import com.agh.anemia.repository.BloodTestResultRepository;
 import org.springframework.http.*;
@@ -10,91 +11,110 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails; // Importuj klasy Spring Security
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Nadal potrzebne dla metod zapisu
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections; // Dla pustej listy, jeśli trzeba obsłużyć przypadek braku usera
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Map;
 
+// ... (klasa UserAlreadyExistsException, jeśli jest zdefiniowana w tym pliku) ...
+
+
 @Service
+@Transactional // Adnotacja na poziomie klasy - domyślnie metody publiczne są transakcyjne
 public class AnemiaService {
 
+    // Repozytorium do interakcji z bazą danych dla BloodTestResult
     private final BloodTestResultRepository repository;
-    // Nie potrzebujemy wstrzykiwać UserDetailsService tutaj, możemy pobrać usera z kontekstu bezpieczeństwa
 
-    private final RestTemplate restTemplate; // Użyj final, inicjuj w konstruktorze
+    // RestTemplate do wywoływania zewnętrznych usług (FastAPI)
+    private final RestTemplate restTemplate;
+
+    // URL endpointu FastAPI
     private final String fastApiUrl = "http://localhost:8000/predict";
+
 
     // Wstrzyknij repozytorium przez konstruktor (zalecane)
     public AnemiaService(BloodTestResultRepository repository) {
         this.repository = repository;
-        this.restTemplate = new RestTemplate(); // Inicjuj RestTemplate
+        this.restTemplate = new RestTemplate();
     }
 
-    // Metoda do pobierania obecnie zalogowanego użytkownika
+    /**
+     * Metoda pomocnicza do pobierania obecnie zalogowanego użytkownika ze Spring Security Context.
+     *
+     * @return Zalogowany obiekt User lub null, jeśli użytkownik nie jest zalogowany lub nie jest typu User.
+     */
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
-            // Principal jest obiektem UserDetails. Jeśli nasza encja User implementuje UserDetails,
-            // możemy bezpiecznie rzutować.
             Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) { // Upewnij się, że to UserDetails (a nasza User implementuje)
-                // Upewnij się, że obiekt principal jest faktycznie Twoją encją User
-                // (To jest prawda, jeśli używasz UserDetailsServiceImpl zwracającego Twoją encję User)
+            if (principal instanceof UserDetails) {
                 return (User) principal;
             }
         }
-        return null; // Zwróć null, jeśli użytkownik nie jest zalogowany lub principal nie jest typu User
+        return null;
     }
 
 
+    /**
+     * Obsługuje predykcję i zapis wyniku po przesłaniu formularza Thymeleaf do /anemia/predict.
+     * Otrzymuje encję BloodTestResult bezpośrednio z formularza.
+     * Ta metoda jest transakcyjna ze względu na zapis.
+     *
+     * @param result Encja BloodTestResult z danymi wejściowymi (mapowana z @ModelAttribute).
+     * @return Zapisana encja BloodTestResult z dodanymi wynikami predykcji.
+     */
+    // Metoda jest domyślnie transakcyjna dzięki adnotacji na poziomie klasy @Transactional
+    // @Transactional // Możesz jawnie dodać, jeśli chcesz nadpisać domyślne ustawienia klasy
     public BloodTestResult predictAndSave(BloodTestResult result) {
-        // POBIERZ ZALOGOWANEGO UŻYTKOWNIKA I USTAWIJ GO W WYNIKU
         User currentUser = getCurrentUser();
         if (currentUser == null) {
-            // Obsłuż przypadek, gdy użytkownik nie jest zalogowany (np. rzuć wyjątek, zwróć null)
-            // W naszej konfiguracji SecurityConfig ścieżka /anemia/form i /anemia/predict
-            // wymagają uwierzytelnienia, więc to nie powinno się zdarzyć,
-            // ale dobra praktyka to sprawdzić.
             throw new IllegalStateException("Użytkownik nie jest zalogowany, a próbuje wykonać predykcję!");
         }
-        result.setUser(currentUser); // Ustaw użytkownika przed wysłaniem do FastAPI i zapisem
+        result.setUser(currentUser);
 
-        // Wywołaj FastAPI
         PredictionResponse resp = callFastApi(result);
         result.setPrediction(resp.getPrediction());
         result.setProbability(resp.getProbability());
-        // result.setEpicrisis(resp.getEpicrisis()); // Zakładając, że epicrisis jest w PredictionResponse
+        // result.setEpicrisis(resp.getEpicrisis());
 
-        // Zapisz wynik (teraz z ustawionym userem)
-        return repository.save(result);
+        System.out.println("Saving BloodTestResult entity received from form/modelAttribute after FastAPI call: " + result.toString());
+
+        return repository.save(result); // Zapisz encję
     }
 
     /**
      * Pobiera wyniki predykcji TYLKO dla zalogowanego użytkownika.
+     * Używane przez kontroler do wyświetlania historii.
+     * Jest to operacja TYLKO DO ODCZYTU, NIE POWINNA BYĆ TRANSAKCYJNA.
+     *
+     * @return Lista BloodTestResult dla zalogowanego użytkownika.
      */
-    @Deprecated // Oznaczamy jako przestarzałe, bo nie używamy go już do historii
-    public Iterable<BloodTestResult> getAll() {
-        // Ta metoda już nie będzie używana do historii dla danego użytkownika
-        return repository.findAll(); // Nadal działa, ale nie filtruje
-    }
-
-    // DODAJ TĘ NOWĄ METODĘ DO POBIERANIA HISTORII DLA ZALOGOWANEGO UŻYTKOWNIKA
+    // USUNIĘTO JAWNĄ ADNOTACJĘ @Transactional, jeśli tam była
+    // Ponieważ @Transactional jest na poziomie klasy, domyślnie metody publiczne SĄ transakcyjne.
+    // ABY ZMIENIĆ TO ZACHOWANIE DLA TEJ METODY, MUSIMY JĄ OZNACZYĆ @Transactional(readOnly = true) LUB PODOBNIE,
+    // ALBO USUNĄĆ @Transactional z poziomu klasy i dodawać ją tylko do metod zapisu.
+    // Dla prostoty, spróbujmy jawnie oznaczyć jako readOnly, jeśli to @Transactional na klasie powoduje problem
+    @Transactional(readOnly = true) // Oznacz jawnie jako tylko do odczytu
     public Iterable<BloodTestResult> getHistoryForCurrentUser() {
-        // POBIERZ ZALOGOWANEGO UŻYTKOWNIKA
         User currentUser = getCurrentUser();
         if (currentUser == null) {
-            // Jeśli użytkownik nie jest zalogowany (co nie powinno się zdarzyć dzięki SecurityConfig),
-            // zwróć pustą listę lub rzuć wyjątek.
             return Collections.emptyList();
         }
-
-        // Pobierz wyniki TYLKO dla tego użytkownika za pomocą nowej metody repozytorium
+        // Ta metoda jest teraz jawnie oznaczona jako tylko do odczytu
         return repository.findByUser(currentUser);
     }
 
-
+    /**
+     * Wywołuje zewnętrzną usługę FastAPI do predykcji.
+     *
+     * @param input Obiekt z danymi wejściowymi do predykcji.
+     * @return Obiekt PredictionResponse z wynikiem i pewnością.
+     */
     public PredictionResponse callFastApi(BloodTestResult input) {
-        // RestTemplate restTemplate = new RestTemplate(); // Nie twórz nowego RestTemplate za każdym razem, użyj zainicjowanego w konstruktorze
         String url = "http://localhost:8000/predict";
 
         Map<String, Double> body = Map.of(
@@ -111,11 +131,11 @@ public class AnemiaService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Double>> request = new HttpEntity<>(body, headers); // Użyj Map jako typu dla body
+        HttpEntity<Map<String, Double>> request = new HttpEntity<>(body, headers);
 
         ResponseEntity<PredictionResponse> response = restTemplate.postForEntity(
                 url,
-                request, // Użyj obiektu HttpEntity
+                request,
                 PredictionResponse.class
         );
 
@@ -123,17 +143,43 @@ public class AnemiaService {
     }
 
 
-    /** Tylko zapis – bez wywoływania FastAPI */
-    public BloodTestResult save(BloodTestResult result) {
+    /**
+     * Zapisuje wynik predykcji otrzymany jako DTO z frontendu (po predykcji JS fetch).
+     * Tworzy nową encję BloodTestResult na podstawie DTO i zapisuje ją w bazie.
+     * Ta metoda jest transakcyjna ze względu na zapis.
+     *
+     * @param resultDto DTO z danymi wejściowymi i wynikami predykcji otrzymane z frontendu.
+     * @return Zapisana encja BloodTestResult.
+     */
+    // Metoda jest domyślnie transakcyjna dzięki adnotacji na poziomie klasy @Transactional
+    // @Transactional // Możesz jawnie dodać, jeśli chcesz nadpisać domyślne ustawienia klasy
+    public BloodTestResult savePredictionResult(BloodTestPredictionDto resultDto) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
-            System.err.println("Warning: Saving BloodTestResult via /anemia/save without a logged-in user. This result will not be linked.");
-            result.setUser(null); // Zapisz bez powiązania z userem, jeśli endpoint jest publiczny (nie jest w naszej obecnej konfig.)
-        } else {
-            result.setUser(currentUser); // Ustaw użytkownika
+            throw new IllegalStateException("Użytkownik nie jest zalogowany, a próbuje zapisać wynik!");
         }
+
+        BloodTestResult result = new BloodTestResult();
+
+        result.setRBC(resultDto.getRBC());
+        result.setHGB(resultDto.getHGB());
+        result.setHCT(resultDto.getHCT());
+        result.setMCV(resultDto.getMCV());
+        result.setMCH(resultDto.getMCH());
+        result.setMCHC(resultDto.getMCHC());
+        result.setRDW(resultDto.getRDW());
+        result.setPLT(resultDto.getPLT());
+        result.setWBC(resultDto.getWBC());
+        result.setPrediction(resultDto.getPrediction());
+        result.setProbability(resultDto.getProbability());
+        result.setEpicrisis(resultDto.getEpicrisis());
+
+        result.setUser(currentUser);
+        // result.onCreate(); // @PrePersist handles this when saving
+
+        System.out.println("Saving BloodTestResult entity created from DTO: " + result.toString());
+
         return repository.save(result);
     }
-
 
 }

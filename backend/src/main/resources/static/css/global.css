@@ -1,6 +1,7 @@
 /* src/main/resources/static/css/global.css */
 
-/* -- CSS Variables based on Shadcn/Tailwind -- */
+/* -- CSS Variables (Optional - can be removed if not used elsewhere) -- */
+/* Te zmienne nie są aktywnie używane przez hexy w tym pliku, ale mogą być referencją */
 :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -36,31 +37,48 @@ body {
     min-height: 100vh;
 }
 
-/* Style do blokowania scrollowania tła gdy menu jest otwarte (używany przez JS) */
+/* Styl do blokowania scrollowania tła gdy menu jest otwarte (używany przez JS) */
 body.menu-open {
     overflow: hidden;
 }
 
-/* Style dla głównego kontenera treści (odpowiada main.container w Layout.tsx) */
+/* --- Layout and Structural Styles --- */
+
+/* Style dla głównego kontenera treści */
 .container {
     flex-grow: 1; /* Kontener treści zajmie dostępną przestrzeń */
     background-color: #ffffff; /* Białe tło dla treści */
-    padding: 30px 40px; /* P odpowiada p-6 md:p-8 (choć tu jest 6/8, dostosowano) */
+    padding: 30px 40px;
     border-radius: 10px; /* rounded-lg */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* shadow-md */
-    margin: 20px auto; /* mx-auto my-5 (dostosowano wartości) */
-    max-width: 800px; /* max-w-4xl (dostosowano wartość) */
+    margin: 20px auto; /* mx-auto my-5 */
+    max-width: 800px; /* max-w-4xl */
     width: calc(100% - 80px); /* Upewnij się, że działa z paddingiem */
     box-sizing: border-box; /* Padding wewnątrz szerokości */
-    /* animate-fade-in - dodamy klasę animate-fade-in do .page-content */
+    /* animated class handled by JS/Animations section */
 }
+
+/* Style dla kontenerów logowania/rejestracji (opakowujących formularz) */
+.login-container, .registration-container {
+    max-width: 400px;
+    margin: 30px auto; /* Centrowanie na stronie */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Centruje zawartość wewnątrz kontenera (np. nagłówek h2) */
+    /* animated class handled by JS/Animations section */
+}
+
+/* --- Typographic Styles --- */
 
 h1, h2 {
     color: #0277bd; /* Medium blue */
     margin-top: 0;
-    /* text-3xl font-bold mb-4/6 */
+    font-weight: bold;
+}
+h1 {
     font-size: 1.875rem; /* 30px */
-    font-weight: 700;
     margin-bottom: 1rem; /* 16px */
 }
 h2 {
@@ -68,46 +86,50 @@ h2 {
     margin-bottom: 1.5rem; /* 24px */
 }
 
+/* --- Form Styles --- */
 
 /* Style dla formularzy (formularz anemii, logowanie, rejestracja) */
-/* Te style są współdzielone dzięki wspólnym klasom i typom inputów */
-/* grid grid-cols-1 md:grid-cols-2 gap-6 */
 .form-container, .login-form, .registration-form {
     display: grid; /* Używamy grid do układu pól */
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Automatyczne kolumny responsywne */
-    gap: 24px; /* gap-6 */
-    margin-bottom: 24px; /* mb-6 */
-    max-width: 100%; /* Upewnij się, że formularze nie wychodzą poza kontener */
-    width: 100%; /* Upewnij się, że formularze zajmują całą szerokość kontenera */
+    gap: 20px; /* Odstęp między polami */
+    margin-bottom: 20px;
+    max-width: 100%;
+    width: 100%;
+    text-align: left; /* DODANO: Wyrównanie tekstu wewnątrz formularza do lewej */
 }
-.login-form, .registration-form {
-    max-width: 400px; /* max-w-md dla login/register container */
-    margin: 0 auto 24px auto; /* mx-auto mb-6 */
+/* Specyficzne style dla formularzy logowania/rejestracji, jeśli są w osobnym kontenerze */
+.login-container .login-form,
+.registration-container .registration-form {
+    margin: 0 auto; /* Usunięto dolny margines z poprzedniej reguły i dodano auto po bokach */
+    max-width: 100%; /* Zresetuj max-width, bo kontener ma swoje ograniczenie */
 }
 
 
 /* Styl specyficzny dla przycisku submit w formularzach, zajmuje całą szerokość w gridzie */
-/* col-span-1 md:col-span-2 */
-.form-container .form-group.full-width,
 .form-container button[type="submit"],
 .login-form button[type="submit"],
-.registration-form button[type="submit"] {
+.registration-container button[type="submit"] {
     grid-column: 1 / -1; /* Przycisk zajmuje całą szerokość gridu */
 }
-
 
 .form-group {
     display: flex;
     flex-direction: column; /* Etykieta nad polem */
-    /* space-y-2 */
-    margin-bottom: 8px; /* 8px spacing */
+    margin-bottom: 15px; /* Odstęp między grupami pól (dostosowano) */
+    text-align: left; /* DODANO: Wyrównanie tekstu wewnątrz grupy do lewej */
 }
+.form-group:last-child { /* Ostatnia grupa pól przed przyciskiem submit */
+    margin-bottom: 20px; /* Większy odstęp przed przyciskiem */
+}
+
+
 .form-group label {
-    /* text-[#01579b] font-bold */
-    margin-bottom: 8px; /* 8px spacing */
+    margin-bottom: 5px; /* Odstęp między etykietą a polem input */
     font-weight: bold;
     color: #01579b; /* Ciemniejszy niebieski dla etykiet */
     font-size: 0.875rem; /* text-sm */
+    text-align: left; /* DODANO: Upewnij się, że etykieta jest wyrównana do lewej */
 }
 
 .form-group input[type="number"],
@@ -115,36 +137,34 @@ h2 {
 .form-group input[type="password"],
 .form-group input[type="email"]
 {
-    width: 100%; /* w-full */
-    padding: 12px; /* p-3 */
-    border: 1px solid #b3e5fc; /* border border-[#b3e5fc] */
-    border-radius: 4px; /* rounded-md */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #b3e5fc;
+    border-radius: 4px;
     font-size: 1em;
-    box-sizing: border-box; /* Padding wewnątrz szerokości */
+    box-sizing: border-box;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* focus:border-[#0288d1] focus:ring-[#0288d1] */
 .form-group input[type="number"]:focus,
 .form-group input[type="text"]:focus,
 .form-group input[type="password"]:focus,
 .form-group input[type="email"]:focus
 {
-    border-color: #0288d1; /* Ciemniejszy niebieski na focus */
-    box-shadow: 0 0 0 2px rgba(2, 136, 209, 0.2); /*ring-[#0288d1] */
-    outline: none; /* Usuń domyślny outline */
+    border-color: #0288d1;
+    box-shadow: 0 0 0 2px rgba(2, 136, 209, 0.2);
+    outline: none;
 }
 
-/* Style przycisku submit */
+/* Ogólne style przycisku submit (nadpisywane przez selektory z klasą formularza) */
 button[type="submit"] {
-    /* bg-[#4fc3f7] hover:bg-[#29b6f6] text-white py-3 px-6 rounded-md text-lg font-bold transition-all hover:translate-y-[-2px] active:translate-y-0 */
     background-color: #4fc3f7;
     color: white;
-    padding: 12px 24px; /* py-3 px-6 (dostosowano) */
+    padding: 12px 25px;
     border: none;
-    border-radius: 6px; /* rounded-md */
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1.125rem; /* text-lg */
+    font-size: 1.1em;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.1s ease;
 }
@@ -159,119 +179,106 @@ button[type="submit"]:active {
 }
 
 
-/* Style dla tabeli historii */
-/* overflow-x-auto (dodajemy wrapper div) */
+/* --- Table Styles (History) --- */
+
+.table-container { /* Container around the table for overflow and shadow */
+    overflow-x: auto; /* Add scroll on small screens if table is too wide */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    /* animated class handled by JS/Animations section */
+}
+
 table {
-    width: 100%; /* w-full */
-    border-collapse: collapse; /* Usuń podwójne linie */
-    /* mb-6 (już w kontenerze) */
-    /* border-separate border-spacing-2 (nie używamy border-spacing) */
+    width: 100%;
+    border-collapse: collapse; /* Remove double borders */
 }
 
 th, td {
-    padding: 12px; /* p-3 */
-    text-align: left; /* text-left */
-    border-bottom: 1px solid #e0f7fa; /* border-b border-[#e0f7fa] */
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0f7fa;
 }
 
 th {
-    background-color: #b3e5fc; /* bg-[#b3e5fc] */
-    color: #01579b; /* text-[#01579b] */
+    background-color: #b3e5fc;
+    color: #01579b;
     font-weight: bold;
 }
 
 tr:nth-child(even) {
-    background-color: #e0f7fa; /* bg-[#e0f7fa] */
+    background-color: #e0f7fa;
 }
+/* Styl dla nieparzystych wierszy - dodany dla kontrastu */
 tr:nth-child(odd) {
-    background-color: #ffffff; /* bg-white */
+    background-color: #ffffff;
 }
 
 
-/* Style dla sekcji wyniku (#result) */
+/* --- Result Section Styles --- */
+
 #result {
-    margin-top: 24px; /* mt-6 */
-    padding: 16px; /* p-4 */
-    background-color: #e0f7fa; /* bg-[#e0f7fa] */
-    border: 1px solid #b3e5fc; /* border border-[#b3e5fc] */
-    border-radius: 6px; /* rounded-md */
-    white-space: pre-wrap; /* Zachowaj złamania linii */
-    color: #01579b; /* text-[#01579b] */
-    /* animate-fade-in - dodamy klasę animate-fade-in do elementu */
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e0f7fa;
+    border: 1px solid #b3e5fc;
+    border-radius: 5px;
+    white-space: pre-wrap; /* Preserve line breaks */
+    color: #01579b;
+    /* animated class handled by JS/Animations section */
 }
 #result strong {
-    color: #0277bd; /* Medium blue */
+    color: #0277bd;
 }
 
-/* Style dla linków nawigacyjnych (inne niż w navbarze, np. "Zobacz historię" pod formularzem) */
+
+/* --- Action Links (below forms/tables) --- */
 .action-links {
-    margin-top: 24px; /* mt-6 */
+    margin-top: 20px;
+    text-align: center; /* DODANO: Wyśrodkowanie linków akcji */
 }
 .action-links a {
-    /* text-[#0277bd] font-bold hover:bg-[#e0f7fa] */
-    display: inline-block; /* Upewnij się, że linki zachowują się jak przyciski/bloki */
+    display: inline-block; /* Aby padding i marginesy działały */
     margin-right: 15px;
     color: #0277bd;
-    text-decoration: none; /* Remove underline by default */
+    text-decoration: none;
     font-weight: bold;
-    padding: 8px 16px; /* py-2 px-6 (approx) */
-    border-radius: 6px; /* rounded-md */
+    padding: 8px 16px; /* Dodano padding, żeby wyglądały jak przyciski */
+    border-radius: 6px;
     transition: background-color 0.3s ease;
 }
 .action-links a:hover {
     background-color: #e0f7fa;
-    text-decoration: none; /* Remove underline on hover if needed */
-}
-.action-links a[variant="outline"] { /* Dostosuj style dla Button variant="outline" */
-    border: 1px solid #0277bd;
-}
-.action-links a[variant="outline"]:hover {
-    background-color: #e0f7fa;
-    color: #01579b; /* Przywróć ciemniejszy niebieski na hover */
+    text-decoration: none; /* Usuń podkreślenie na hover */
 }
 
+/* --- Alert Messages (Errors/Info) --- */
 
-/* Style dla kontenerów logowania/rejestracji (opakowujących formularz) */
-/* bg-white p-8 rounded-lg shadow-md text-center */
-.login-container, .registration-container {
-    /* max-w-md mx-auto (style przeniesione do .login-form, .registration-form) */
-    padding: 32px; /* p-8 */
-    background-color: #ffffff;
-    border-radius: 8px; /* rounded-lg (dostosowano) */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-    text-align: center;
-    /* animate-fade-in - dodamy klasę animate-fade-in do tych kontenerów */
-}
-
-
-/* Style dla komunikatów błędów/sukcesu (odpowiada divom z tekstem błedu w React) */
-/* bg-[#ffcdd2] border border-[#ef9a9a] text-[#b71c1c] p-3 rounded-md mb-4 animate-fade-in */
 .alert-danger, .alert-info {
-    padding: 12px; /* p-3 */
-    margin-bottom: 16px; /* mb-4 */
-    border-radius: 6px; /* rounded-md */
-    text-align: left;
-    /* animate-fade-in - dodamy klasę animate-fade-in do tych komunikatów */
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    text-align: left; /* DODANO: Wyrównanie tekstu w alertach do lewej */
+    /* animated and hide-animation classes handled by JS/Animations section */
 }
 .alert-danger {
-    color: #b71c1c; /* text-[#b71c1c] */
-    background-color: #ffcdd2; /* bg-[#ffcdd2] */
-    border: 1px solid #ef9a9a; /* border border-[#ef9a9a] */
+    color: #b71c1c;
+    background-color: #ffcdd2;
+    border: 1px solid #ef9a9a;
 }
 .alert-info {
-    color: #01579b; /* Ciemniejszy niebieski */
-    background-color: #b3e5fc; /* Jasny niebieski */
-    border: 1px solid #81d4fa; /* Medium niebieski */
+    color: #01579b;
+    background-color: #b3e5fc;
+    border: 1px solid #81d4fa;
 }
 
-/* Style dla linku "Masz już konto?" (pod formularzem rejestracji) */
-/* mt-6 text-sm */
-.login-link-text, .registration-link-text { /* Dodano registration-link-text */
-    margin-top: 24px; /* mt-6 */
-    font-size: 0.875rem; /* text-sm */
+/* --- Login/Registration Link Text --- */
+.login-link-text, .registration-link-text {
+    margin-top: 20px;
+    font-size: 0.9em;
+    text-align: center; /* DODANO: Wyśrodkowanie tekstu pod formularzami logowania/rejestracji */
 }
 .login-link-text a, .registration-link-text a {
-    /* text-[#0277bd] font-bold hover:underline */
     color: #0277bd;
     font-weight: bold;
     text-decoration: none;
@@ -281,51 +288,46 @@ tr:nth-child(odd) {
 }
 
 
+/* --- Specific Element Styles --- */
+
 /* Style dla linku test-link na stronie głównej (jako przycisk) */
-/* bg-[#4fc3f7] text-white py-4 px-8 rounded-md text-xl font-bold inline-block hover:bg-[#29b6f6] transition-colors shadow-md hover:shadow-lg */
 .test-link {
     display: inline-block;
-    background-color: #4fc3f7; /* Jasny niebieski */
-    color: white !important; /* Użyj !important aby nadpisać style linków z navbara */
-    padding: 16px 32px; /* py-4 px-8 */
-    border-radius: 6px; /* rounded-md */
-    font-size: 1.25rem; /* text-xl */
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+    background-color: #4fc3f7;
+    color: white !important;
+    padding: 15px 30px;
     text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    font-size: 1.2em;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .test-link:hover {
-    background-color: #29b6f6; /* Nieco ciemniejszy niebieski na hover */
-    transform: translateY(-2px); /* hover:translate-y-[-2px] */
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* hover:shadow-lg */
+    background-color: #29b6f6;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 .test-link:active {
-    transform: translateY(0); /* active:translate-y-0 */
-}
-/* transform hover:scale-105 transition-transform duration-200 na li otaczającym test-link */
-.test-link-li:hover .test-link {
-    /* Efekt scale będzie na samym linku, jeśli go zastosujemy */
-    transform: scale(1.05);
-    transition: transform 0.2s ease;
-}
-/* Domyślny transform resetowany na normalny stan */
-.test-link-li .test-link {
-    transform: scale(1);
-    transition: transform 0.2s ease;
+    transform: translateY(0);
 }
 
 
-/* -- Custom Animations (from index.css) -- */
-@keyframes fade-in {
+/* --- Animation Keyframes --- */
+@keyframes slideUpFade {
     0% {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
     100% {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes fadeIn { /* Proste pojawianie się */
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 @keyframes scale-in {
@@ -348,26 +350,67 @@ tr:nth-child(odd) {
     }
 }
 
-/* Animation classes (apply these to elements in HTML) */
-.animate-fade-in {
-    animation: fade-in 0.3s ease-out forwards;
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
+
+/* --- Animation Utility Classes (used by JS to trigger animations) --- */
+/* Initial state is defined before these classes (opacity: 0, transform: ...) */
+
+/* Class added to trigger slideUpFade animation */
+.animated {
+    animation: slideUpFade 0.5s ease-out forwards;
+}
+/* Class used to trigger fade in animation */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+/* Class used to trigger scale in animation */
 .animate-scale-in {
     animation: scale-in 0.2s ease-out forwards;
 }
-
+/* Class used to trigger slide in from right animation (e.g. mobile menu) */
 .animate-slide-in-right {
     animation: slide-in-right 0.3s ease-out forwards;
 }
 
-/* Pulse animation (used in History for loading) */
-.pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Class added to hide elements with fade out animation */
+.hide-animation {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
 }
 
-/* Overwrite default browser focus outline */
-:focus-visible {
-    outline: 2px solid #0288d1; /* Use a color from your palette */
-    outline-offset: 2px;
+/* --- Media Queries --- */
+
+@media (max-width: 768px) {
+    /* Styles for smaller screens (handled in navbar.css for navbar elements) */
+
+    /* Na małych ekranach, formularze login/rejestracja nie potrzebują gridu */
+    .login-form, .registration-form {
+        display: block; /* Powrót do domyślnego flow */
+        max-width: 100%; /* Usuń ograniczenie max-width */
+        margin: 0 auto; /* Centruj */
+        text-align: left; /* DODANO: Wyrównanie tekstu do lewej */
+    }
+    .login-form .form-group,
+    .registration-form .form-group {
+        width: 100%; /* Pola zajmują całą szerokość */
+        margin-bottom: 15px; /* Mniejszy odstęp */
+    }
+    /* Przyciski submit logowania/rejestracji na małych ekranach */
+    .login-form button[type="submit"],
+    .registration-form button[type="submit"] {
+        width: auto; /* Przycisk nie musi zajmować całej szerokości w block */
+        grid-column: auto; /* Usuń grid column */
+        padding: 12px 25px; /* Przywróć padding przycisku */
+    }
+
+    /* W trybie mobilnym, animacje mogą być inne (np. bez opóźnień) */
+    /* Klasa 'animated' może mieć inne opóźnienie przejścia w media query */
+    .login-form .form-group.animated, .registration-form .form-group.animated,
+    .login-form button[type="submit"].animated, .registration-form button[type="submit"].animated {
+        transition-delay: 0ms !important; /* Usuń opóźnienie z JS */
+    }
 }

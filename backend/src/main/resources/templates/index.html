@@ -1,56 +1,182 @@
+
+<!-- src/main/resources/templates/index.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
-    <title>Strona Główna</title>
+    <title>Aplikacja Medyczna</title>
     <style>
-        .test-list {
+        /* Style specyficzne dla strony głównej */
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #0277bd;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero h1::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background-color: #4fc3f7;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .hero:hover h1::after {
+            width: 120px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #01579b;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .services-list {
             list-style: none;
             padding: 0;
-            margin-top: 30px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-        .test-list li {
-            margin-bottom: 20px;
+
+        .services-list li {
+            opacity: 0;
+            transform: translateY(20px);
         }
-        .test-link { /* Styl przycisku */
+
+        .services-list li:nth-child(1) { animation: fadeInUp 0.6s ease-out 0.3s forwards; }
+        .services-list li:nth-child(2) { animation: fadeInUp 0.6s ease-out 0.5s forwards; }
+        .services-list li:nth-child(3) { animation: fadeInUp 0.6s ease-out 0.7s forwards; }
+
+        .test-link {
             display: inline-block;
-            background-color: #4fc3f7; /* Jasny niebieski */
-            color: white !important; /* Użyj !important aby nadpisać style linków z navbara */
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            font-size: 1.2em;
+            background-color: #4fc3f7;
+            color: white !important;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.25rem;
             font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
+
+        .test-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%
+            );
+            transition: left 0.5s ease;
+        }
+
         .test-link:hover {
-            background-color: #29b6f6; /* Nieco ciemniejszy niebieski na hover */
-            transform: translateY(-2px);
+            background-color: #29b6f6;
+            transform: translateY(-7px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
+
+        .test-link:hover::before {
+            left: 100%;
+        }
+
         .test-link:active {
-            transform: translateY(0);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
-    <link rel="stylesheet" href="../static/css/global.css">
 </head>
 <body>
-
-
 <div class="page-content">
-    <h1>Witaj w Aplikacji Medycznej</h1>
-    <p>Tutaj możesz skorzystać z dostępnych narzędzi do predykcji i analizy badań.</p>
+    <div class="hero">
+        <h1>Witaj w Aplikacji Medycznej</h1>
+        <p>Tutaj możesz skorzystać z dostępnych narzędzi do predykcji i analizy badań.</p>
+    </div>
+
     <h2>Dostępne badania / predykcje:</h2>
-    <ul class="test-list">
+
+    <ul class="services-list">
         <li>
-            <a href="/anemia/form" class="test-link">Predykcja Anemii</a>
+            <a th:if="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/anemia/form}"
+               class="test-link">
+                Predykcja Anemii
+            </a>
+            <a th:unless="${#authorization.expression('isAuthenticated()')}"
+               th:href="@{/login}"
+               class="test-link">
+                Predykcja Anemii
+            </a>
+
         </li>
-        <!-- W przyszłości można dodać więcej linków do innych badań -->
+        <!-- Tutaj możesz dodać więcej badań w przyszłości -->
     </ul>
 </div>
-
-
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dodaj animację "pulsowania" dla linków na stronie głównej
+        const links = document.querySelectorAll('.test-link');
 
+        links.forEach(link => {
+            // Pulsujący cień
+            let pulseAnimation;
+
+            link.addEventListener('mouseenter', () => {
+                let scale = 1.05;
+                let increasing = false;
+
+                pulseAnimation = setInterval(() => {
+                    if (scale >= 1.07) increasing = false;
+                    if (scale <= 1.03) increasing = true;
+
+                    scale = increasing ? scale + 0.002 : scale - 0.002;
+                    link.style.transform = `translateY(-7px) scale(${scale})`;
+                }, 30);
+            });
+
+            link.addEventListener('mouseleave', () => {
+                clearInterval(pulseAnimation);
+                link.style.transform = '';
+            });
+        });
+    });
 </script>
 </body>
 </html>

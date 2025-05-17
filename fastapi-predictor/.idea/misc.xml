@@ -6,5 +6,5 @@
   <component name="GithubDefaultAccount">
     <option name="defaultAccountId" value="a9dc2d35-9b05-4bd6-afd6-cafb298eb977" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12.3 WSL (Ubuntu): (/mnt/c/Users/jan_b/AnemiaProject/fastapi-predictor/fastapi-predictor-env/bin/python)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12.3 WSL (Ubuntu): (/home/jan_b/.virtualenvs/fastapi-predictor/bin/python)" project-jdk-type="Python SDK" />
 </project>

@@ -1,36 +1,222 @@
 <!-- src/main/resources/templates/result.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})" lang="pl">
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
-    <title>Wynik Predykcji Anemii</title>
+    <title>Szczegóły Wyniku</title>
     <style>
-        /* Style specyficzne dla wyniku, jeśli potrzebne */
-        .result-display p {
-            margin-bottom: 10px;
-            font-size: 1.1em;
+        /* Style specyficzne dla strony wyniku */
+        .result-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeInScale 0.5s ease-out forwards;
         }
-        .result-display strong {
-            color: #0277bd; /* Medium blue */
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0f7fa;
+        }
+
+        .result-title {
+            margin: 0;
+            color: #0277bd;
+            font-size: 1.5rem;
+        }
+
+        .result-date {
+            color: #01579b;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .result-main {
+            background-color: #e0f7fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #0277bd;
+        }
+
+        .result-prediction {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #0277bd;
+            margin-bottom: 10px;
+        }
+
+        .result-probability {
+            font-size: 1.1rem;
+            color: #01579b;
+        }
+
+        .result-epicrisis {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #b3e5fc;
+            font-style: italic;
+            color: #01579b;
+        }
+
+        .parameters-title {
+            margin-bottom: 15px;
+            color: #0277bd;
+            font-size: 1.2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .parameters-title::after {
+            content: '';
+            position: absolute;
+            width: 40%;
+            height: 2px;
+            background-color: #4fc3f7;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .parameters-title:hover::after {
+            width: 100%;
+        }
+
+        .parameters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .parameter-item {
+            background-color: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .parameter-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .parameter-name {
+            font-weight: bold;
+            color: #01579b;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .parameter-value {
+            font-size: 1.1rem;
+            color: #0277bd;
+        }
+
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 </head>
 <body>
 <div class="page-content">
-    <h2>Wynik Predykcji Anemii</h2>
-    <!-- Zawartość wyniku -->
-    <div class="result-display">
-        <p><strong>Predykcja:</strong> <span th:text="${result.prediction}"></span></p>
-        <p><strong>Pewność:</strong> <span th:text="${result.probability != null ? #numbers.formatDecimal(result.probability, 0, 2) : 'N/A'}"></span></p>
-        <!-- Jeśli do modelu BloodTestResult dodasz pole epicrisis i będzie ono przekazywane, można je tu wyświetlić -->
-        <!-- <p th:if="${result.epicrisis}"><strong>Epikryza:</strong> <span th:text="${result.epicrisis}"></span></p> -->
+    <h2>Szczegóły Wyniku</h2>
+
+    <div th:if="${error}" class="alert-danger animate-fade-in" th:text="${error}">
+        Błąd ładowania szczegółów wyniku
+    </div>
+
+    <div th:if="${result}" class="result-container">
+        <div class="result-header">
+            <div class="result-title">Predykcja Anemii #<span th:text="${result.id}">1</span></div>
+            <div class="result-date" th:text="${#temporals.format(result.createdAt, 'dd-MM-yyyy HH:mm')}">15-05-2023 14:23</div>
+        </div>
+
+        <div class="result-main">
+            <div class="result-prediction">
+                Wynik: <span th:text="${result.prediction}">Anemia</span>
+            </div>
+            <div class="result-probability">
+                Pewność predykcji: <span th:text="${#numbers.formatDecimal(result.probability, 1, 2)}">0.87</span>
+            </div>
+            <div class="result-epicrisis" th:if="${result.epicrisis}">
+                <strong>Epikryza medyczna:</strong> <span th:text="${result.epicrisis}">Opis epikryzy</span>
+            </div>
+        </div>
+
+        <h3 class="parameters-title">Parametry badania</h3>
+        <div class="parameters-grid">
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="parameter-name">RBC</div>
+                <div class="parameter-value" th:text="${result.RBC}">4.5</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.15s;">
+                <div class="parameter-name">HGB</div>
+                <div class="parameter-value" th:text="${result.HGB}">14</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="parameter-name">HCT</div>
+                <div class="parameter-value" th:text="${result.HCT}">42</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.25s;">
+                <div class="parameter-name">MCV</div>
+                <div class="parameter-value" th:text="${result.MCV}">90</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="parameter-name">MCH</div>
+                <div class="parameter-value" th:text="${result.MCH}">30</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.35s;">
+                <div class="parameter-name">MCHC</div>
+                <div class="parameter-value" th:text="${result.MCHC}">33</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.4s;">
+                <div class="parameter-name">RDW</div>
+                <div class="parameter-value" th:text="${result.RDW}">13</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.45s;">
+                <div class="parameter-name">PLT</div>
+                <div class="parameter-value" th:text="${result.PLT}">250</div>
+            </div>
+            <div class="parameter-item animate-fade-in" style="animation-delay: 0.5s;">
+                <div class="parameter-name">WBC</div>
+                <div class="parameter-value" th:text="${result.WBC}">7</div>
+            </div>
+        </div>
     </div>
 
     <div class="action-links">
-        <a href="/anemia/form">Przewidź ponownie</a>
-        <a href="/anemia/history">Zobacz historię</a>
+        <a href="/anemia/history" class="animate-fade-in">Powrót do historii</a>
+        <a href="/anemia/form" class="animate-fade-in">Nowa predykcja</a>
     </div>
 </div>
-<script></script> <!-- Pusty tag script dla zgodności z layoutem -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animacja dla elementów parametrów
+        const parameterItems = document.querySelectorAll('.parameter-item');
+
+        parameterItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#e0f7fa';
+            });
+
+            item.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '#f5f5f5';
+            });
+        });
+    });
+</script>
 </body>
 </html>

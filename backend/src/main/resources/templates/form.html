@@ -1,16 +1,28 @@
+<!-- src/main/resources/templates/form.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
     <title>Formularz Predykcji Anemii</title>
     <style>
-
+        /* Style specyficzne TYLKO dla form.html, jeśli są */
+        /* Przykład: styl dla loading state przycisku submit */
+        button[type="submit"].loading {
+            /* Dodaj tu style wizualne dla loading state, np. zmiana koloru, ikonka */
+            background-color: #0288d1; /* Ciemniejszy niebieski podczas loading */
+            cursor: progress;
+            /* Możesz dodać ikonę, np. Font Awesome: */
+            /* &::after { content: " \f110"; font-family: "Font Awesome 5 Free"; animation: spin 1s linear infinite; } */
+        }
+        /* Opcjonalnie: animacja obracania ikonki Font Awesome */
+        /* @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } */
     </style>
 </head>
 <body>
 <div class="page-content">
     <h2>Formularz Predykcji Anemii</h2>
     <form id="blood-form" class="form-container">
+        <!-- Pola formularza (jak poprzednio) -->
         <div class="form-group">
             <label for="RBC">RBC:</label>
             <input type="number" step="any" name="RBC" id="RBC" required placeholder="np. 4.5">
@@ -48,6 +60,9 @@
             <input type="number" step="any" name="WBC" id="WBC" required placeholder="np. 7">
         </div>
 
+        <!-- Nie potrzebujemy tutaj ukrytego pola CSRF, JS doda je do nagłówka -->
+        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+
         <button type="submit">Przewidź</button>
     </form>
 
@@ -57,26 +72,24 @@
         <a href="/anemia/history">Zobacz historię</a>
     </div>
 </div>
-
+<!-- SKRYPT SPECYFICZNY DLA FORMULARZA - PRZEKAZYWANY JAKO ${scripts} DO LAYOUTU -->
 <script>
-    // src/main/resources/templates/form.html -> Wewnątrz tagu <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const bloodForm = document.getElementById('blood-form');
-        const resultDiv = document.getElementById('result');
+        const form = document.getElementById('blood-form');
 
-        // FUNKCJA DO POBIERANIA CIASDECZKA CSRF (umieść ją tutaj lub w global.js i udostępnij globalnie)
-        // Upewnij się, że ta funkcja jest dostępna!
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null; // Zwróć null, jeśli ciasteczko nie znalezione
-        }
-
-
-        if (bloodForm) {
-            bloodForm.addEventListener('submit', async function (e) {
+        if (form) {
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
+
+                const submitButton = this.querySelector('button[type="submit"]');
+                const originalText = submitButton ? submitButton.innerText : 'Przewidź'; // Zapisz oryginalny tekst lub domyślny
+
+                // Zmień na loading state
+                if (submitButton) {
+                    submitButton.innerText = 'Przetwarzanie...';
+                    submitButton.disabled = true;
+                    submitButton.classList.add('loading');
+                }
 
                 const formData = new FormData(this);
                 const json = {};
@@ -84,10 +97,11 @@
                     json[key] = parseFloat(value);
                 });
 
-                if(resultDiv) resultDiv.innerText = 'Przewidywanie...';
+                document.getElementById('result').innerText = 'Przewidywanie...';
 
+                // Wysyłanie do FastAPI - NIE DODAJEMY CSRF
+                console.log('Sending to FastAPI /predict:', JSON.stringify(json));
                 try {
-                    // -- Fetch do FastAPI --
                     const response = await fetch('http://localhost:8000/predict', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -97,85 +111,85 @@
                     if (!response.ok) {
                         const errorText = await response.text();
                         console.error('FastAPI error response:', errorText);
-                        throw new Error(`Błąd serwera FastAPI: ${response.status} - ${errorText}`);
+                        document.getElementById('result').innerText = `Błąd serwera FastAPI: ${response.status} - ${errorText}`;
+                        // Nie resetuj przycisku tutaj, finally to zrobi
+                        return; // Stop if FastAPI call fails
                     }
 
-                    const resultData = await response.json();
-                    console.log('FastAPI response:', resultData); // <-- SPRAWDŹ TEN LOG DOKŁADNIE W KONSOLI!
+                    const result = await response.json();
+                    console.log('FastAPI response:', result);
 
-                    let epicrisisText = resultData.epicrisis ? `\nEpikryza medyczna: ${resultData.epicrisis}` : '';
-                    const resultText = `Przewidziano: ${resultData.prediction} (pewność: ${resultData.probability ? resultData.probability.toFixed(2) : 'N/A'})${epicrisisText}`;
+                    let epicrisisText = result.epicrisis ? `\nEpikryza medyczna: ${result.epicrisis}` : '';
 
-                    if(resultDiv) {
-                        resultDiv.innerText = resultText;
-                        resultDiv.classList.add('animate-fade-in'); // Jeśli masz animacje CSS
-                    }
+                    document.getElementById('result').innerText = `Przewidziano: ${result.prediction} (pewność: ${result.probability ? result.probability.toFixed(2) : 'N/A'})` + epicrisisText;
 
-                    // -- Fetch do backendu Spring Boot (ZAPIS) --
-                    // WARUNEK, KTÓRY OCENIAMY TERAZ JAKO PRAWDZIWY NA PODSTAWIE TWOICH LOGÓW
-                    if (resultData.prediction && resultData.probability != null) { // Zmieniono !== undefined na != null dla pewności
-                        const saveData = {
-                            ...json, // Dane wejściowe
-                            prediction: resultData.prediction,
-                            probability: resultData.probability,
-                            epicrisis: resultData.epicrisis || null
+
+                    // Teraz zapis do backendu Spring Boot (/anemia/save)
+                    if (result.prediction && result.probability !== undefined) {
+                        const resultData = {
+                            ...json,
+                            prediction: result.prediction,
+                            probability: result.probability,
+                            epicrisis: result.epicrisis || null
                         };
 
-                        console.log('Saving result to backend:', JSON.stringify(saveData)); // <-- TEN LOG SIĘ POJAWIŁ!
+                        console.log('Saving result to backend:', JSON.stringify(resultData));
 
-                        // *** SPRAWDŹ DOKŁADNIE PONIŻSZY BLOK KODU JS ***
+                        // POBIERZ TOKEN CSRF Z META TAGÓW I DODAJ NAGŁÓWEK
+                        // Zakładamy, że getCsrfToken() jest dostępna globalnie (przeniesiona do global.js)
+                        const csrf = typeof getCsrfToken === 'function' ? getCsrfToken() : null; // Bezpieczne wywołanie
 
-                        // POBIERZ TOKEN CSRF Z CIASDECZKA
-                        const csrfToken = getCookie('XSRF-TOKEN'); // <-- UŻYJ getCookie
-                        console.log('CSRF Token from cookie:', csrfToken); // <-- TEN LOG MUSI SIĘ POJAWIĆ TERAZ!
+                        const headers = {
+                            'Content-Type': 'application/json'
+                            // Nagłówek CSRF dodamy tylko jeśli token jest dostępny
+                        };
 
-                        if (!csrfToken) {
-                            console.warn('CSRF token cookie "XSRF-TOKEN" not found or empty.');
-                            if(resultDiv) resultDiv.innerText += `\nBłąd zapisu: brak tokena CSRF.`;
-                            // Możesz tutaj zakończyć próbę zapisu, ponieważ i tak się nie powiedzie.
-                            return; // Zakończ funkcję tutaj, jeśli brak tokenu
+                        if (csrf && csrf.token && csrf.parameterName) {
+                            // Użyj nazwy parametru i wartości tokenu z meta tagów
+                            // CookieCsrfTokenRepository oczekuje nagłówka "X-XSRF-TOKEN"
+                            headers['X-XSRF-TOKEN'] = csrf.token; // Domyślna nazwa nagłówka dla Cookie repozytorium
+                            console.log(`Using CSRF token in header: ${csrf.token}`);
                         } else {
-                            // USTAWIJ NAGŁÓWKI, W TYM NAGŁÓWEK CSRF
-                            const headers = new Headers(); // Użyj obiektu Headers
-                            headers.append('Content-Type', 'application/json'); // Użyj append
-                            headers.append('X-XSRF-TOKEN', csrfToken); // <-- TEN NAGŁÓWEK MUSI BYĆ DODANY!
-
-                            console.log('Fetch headers for save:', Object.fromEntries(headers.entries())); // <-- TEN LOG MUSI SIĘ POJAWIĆ I POKAZAĆ NAGŁÓWEK
-
-                            const saveResponse = await fetch('/anemia/save', {
-                                method: 'POST',
-                                headers: headers, // <-- Upewnij się, że używasz tego obiektu Headers!
-                                body: JSON.stringify(saveData)
-                            });
-
-                            if (!saveResponse.ok) {
-                                const saveErrorText = await saveResponse.text();
-                                console.error('Backend save error response:', saveResponse); // Loguj cały obiekt odpowiedzi
-                                console.error('Backend save error text:', saveErrorText);
-
-                                if(resultDiv) {
-                                    if(saveResponse.status === 403) {
-                                        resultDiv.innerText += `\nBłąd zapisu: Odmowa dostępu (403). Sprawdź CSRF token/konfigurację.`;
-                                    } else {
-                                        resultDiv.innerText += `\nBłąd zapisu na backendzie: ${saveResponse.status}`;
-                                    }
-                                }
-                            } else {
-                                console.log('Result saved successfully.');
-                                // Tu można dodać toast o zapisie
-                            }
+                            console.warn('CSRF token meta tags not found or getCsrfToken not available. Backend save request will likely fail (403 Forbidden).');
+                            document.getElementById('result').innerText += `\nBłąd: Brak tokena bezpieczeństwa. Proszę odświeżyć stronę lub zalogować się ponownie.`;
+                            // Możemy zatrzymać fetch, skoro wiemy, że się nie uda
+                            // return; // Jeśli chcesz zatrzymać fetch
                         }
 
+                        // Kontynuuj fetch do backendu nawet jeśli brak tokena, żeby zobaczyć błąd 403
+                        const saveResponse = await fetch('/anemia/savePredictionResult', {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify(resultData)
+                        });
+
+                        if (!saveResponse.ok) {
+                            if (saveResponse.status === 403) {
+                                document.getElementById('result').innerText += `\nBłąd zapisu: Odmowa dostępu (problem z bezpieczeństwem / CSRF).`;
+                                console.error('Backend save failed with 403 Forbidden. Likely CSRF issue.');
+                            } else {
+                                const saveErrorText = await saveResponse.text();
+                                console.error('Backend save error response:', saveErrorText);
+                                document.getElementById('result').innerText += `\nBłąd zapisu na backendzie: ${saveResponse.status}`;
+                            }
+                        } else {
+                            console.log('Result saved successfully.');
+                            document.getElementById('result').innerText += `\nWynik zapisany pomyślnie.`;
+                        }
 
                     } else {
-                        console.error('Prediction or probability missing in response from FastAPI', resultData);
-                        if(resultDiv) resultDiv.innerText = 'Błąd: Nie otrzymano prawidłowej odpowiedzi z danymi predykcji.';
+                        console.error('Prediction or probability missing in response from FastAPI', result);
+                        document.getElementById('result').innerText = 'Błąd: Nie otrzymano prawidłowej odpowiedzi od serwera predykcji.';
                     }
                 } catch (error) {
-                    console.error('Global fetch error or FastAPI error:', error);
-                    if(resultDiv) resultDiv.innerText = `Wystąpił błąd: ${error instanceof Error ? error.message : 'Nieznany błąd'}`;
-                } finally {
-                    // ... finally block ...
+                    console.error('Fetch error:', error);
+                    document.getElementById('result').innerText = `Wystąpił błąd: ${error.message}`;
+                } finally { // Zawsze resetuj przycisk po zakończeniu fetch (sukces lub błąd)
+                    if (submitButton) {
+                        submitButton.innerText = originalText;
+                        submitButton.disabled = false;
+                        submitButton.classList.remove('loading');
+                    }
                 }
             });
         }
