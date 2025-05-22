@@ -2,15 +2,15 @@ package com.agh.anemia.model;
 
 public class PredictionResponse {
     private String prediction;
-    private double probability;
+    private String probabilityLabel;
 
 
-    public double getProbability() {
-        return probability;
+    public String getProbabilityLabel() {
+        return probabilityLabel;
     }
 
-    public void setProbability(double probability) {
-        this.probability = probability;
+    public void setProbabilityLabel(String probabilityLabel) {
+        this.probabilityLabel = probabilityLabel;
     }
 
     public String getPrediction() {

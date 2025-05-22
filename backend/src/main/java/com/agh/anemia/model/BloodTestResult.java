@@ -31,12 +31,15 @@ public class BloodTestResult {
     private Double WBC;
 
     private String prediction;
-    private Double probability;
+
+    @Column(name = "probabilityLabel", length = 255)
+    private String probabilityLabel;
+
     private LocalDateTime createdAt;
-    // Zakładając, że dodałeś pole epicrisis z FastAPI
+
+    @Column(columnDefinition="MEDIUMTEXT")
     private String epicrisis;
 
-    // DODAJ TO POLE DLA POWIĄZANIA Z UŻYTKOWNIKIEM
     @ManyToOne // Wiele BloodTestResult należy do jednego Usera
     @JoinColumn(name = "user_id") // Kolumna w tabeli blood_test_result, która będzie kluczem obcym do tabeli users
     private User user;
@@ -71,8 +74,8 @@ public class BloodTestResult {
     public void setWBC(Double WBC) { this.WBC = WBC; }
     public String getPrediction() { return prediction; }
     public void setPrediction(String prediction) { this.prediction = prediction; }
-    public Double getProbability() { return probability; }
-    public void setProbability(Double probability) { this.probability = probability; }
+    public String getProbabilityLabel() { return probabilityLabel; }
+    public void setProbabilityLabel(String probability) { this.probabilityLabel = probability; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public String getEpicrisis() { return epicrisis; }
@@ -97,7 +100,7 @@ public class BloodTestResult {
                 ", PLT=" + PLT +
                 ", WBC=" + WBC +
                 ", prediction='" + prediction + '\'' +
-                ", probability=" + probability +
+                ", probabilityLabel=" + probabilityLabel +
                 ", createdAt=" + createdAt +
                 ", epicrisis='" + epicrisis + '\'' +
                 ", user=" + (user != null ? user.getUsername() : "null") + // Pokaż nazwę użytkownika w stringu

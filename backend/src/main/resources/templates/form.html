@@ -67,7 +67,6 @@
             <input type="number" step="any" name="MCHC" id="MCHC" required placeholder="np. 33">
         </div>
         <div class="form-group">
-            <!-- Jednostka dodana do tekstu label -->
             <label for="RDW">RDW [%]:</label>
             <input type="number" step="any" name="RDW" id="RDW" required placeholder="np. 13">
         </div>
@@ -95,6 +94,19 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('blood-form');
+
+        function getProbabilityLabel(probability) {
+            if (probability == null || typeof probability !== 'number' || probability < 0 || probability > 1) {
+                return 'Nieznana';
+            }
+            if (probability < 0.35) {
+                return 'Niskie';
+            } else if (probability < 0.7) {
+                return 'Średnie';
+            } else {
+                return 'Wysokie';
+            }
+        }
 
         if (form) {
             form.addEventListener('submit', async function (e) {
@@ -133,17 +145,25 @@
                     }
 
                     const result = await response.json();
+
                     console.log('FastAPI response:', result);
+
+                    const probabilityLabelForDisplay = getProbabilityLabel(result.probability); // Pobierz tekstową etykietę dla wyświetlenia
+
+                    const probabilityPercentageForDisplay = result.probability != null ? ` (${(result.probability * 100).toFixed(2)}%)` : 'N/A'; // Pobierz procent dla wyświetlenia
 
                     let epicrisisText = result.epicrisis ? `\nEpikryza medyczna: ${result.epicrisis}` : '';
 
-                    document.getElementById('result').innerText = `Przewidziano: ${result.prediction} (pewność: ${result.probability ? result.probability.toFixed(2) : 'N/A'})` + epicrisisText;
+                    document.getElementById('result').innerText = `Przewidziano: ${result.prediction} (pewność: ${probabilityLabelForDisplay}${probabilityPercentageForDisplay})` + epicrisisText;
 
                     if (result.prediction && result.probability !== undefined) {
+
+                        const probabilityLabelToSave = getProbabilityLabel(result.probability);
+
                         const resultData = {
                             ...json,
                             prediction: result.prediction,
-                            probability: result.probability,
+                            probabilityLabel: probabilityLabelToSave,
                             epicrisis: result.epicrisis || null
                         };
 
@@ -161,11 +181,6 @@
                         } else {
                             console.warn('CSRF token meta tags not found or getCsrfToken not available. Backend save request will likely fail (403 Forbidden).');
                             document.getElementById('result').innerText += `\nBłąd: Brak tokena bezpieczeństwa. Proszę odświeżyć stronę lub zalogować się ponownie.`;
-                            // Consider whether to proceed with saving without CSRF or not.
-                            // For typical Spring Security setups, this will fail.
-                            // If you want to allow it, you might need to configure CSRF differently on the backend.
-                            // For now, let's assume it's required and stop.
-                            // return; // Uncomment this line if you want to stop saving without CSRF
                         }
 
                         const saveResponse = await fetch('/anemia/savePredictionResult', {
@@ -185,7 +200,6 @@
                             }
                         } else {
                             console.log('Result saved successfully.');
-                            document.getElementById('result').innerText += `\nWynik zapisany pomyślnie.`;
                         }
 
                     } else {

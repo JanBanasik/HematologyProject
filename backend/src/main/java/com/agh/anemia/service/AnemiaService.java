@@ -70,7 +70,7 @@ public class AnemiaService {
 
         PredictionResponse resp = callFastApi(result);
         result.setPrediction(resp.getPrediction());
-        result.setProbability(resp.getProbability());
+        result.setProbabilityLabel(resp.getProbabilityLabel());
 
         System.out.println("Saving BloodTestResult entity received from form/modelAttribute after FastAPI call: " + result.toString());
 
@@ -119,6 +119,7 @@ public class AnemiaService {
         if (currentUser == null) {
             throw new IllegalStateException("Użytkownik nie jest zalogowany, a próbuje zapisać wynik!");
         }
+        System.out.println("Received DTO getProbabilityLabel(): " + resultDto.getProbabilityLabel()); // Dodaj ten log
 
         BloodTestResult result = new BloodTestResult();
 
@@ -132,11 +133,13 @@ public class AnemiaService {
         result.setPLT(resultDto.getPLT());
         result.setWBC(resultDto.getWBC());
         result.setPrediction(resultDto.getPrediction());
-        result.setProbability(resultDto.getProbability());
+        result.setProbabilityLabel(resultDto.getProbabilityLabel());
         result.setEpicrisis(resultDto.getEpicrisis());
 
         result.setUser(currentUser);
-
+        String probabilityLabelFromDto = resultDto.getProbabilityLabel();
+        System.out.println("Value from DTO before setting in entity: " + probabilityLabelFromDto); // Dodaj ten log
+        System.out.println("Value in entity after setting: " + result.getProbabilityLabel()); // Dodaj ten log
         System.out.println("Saving BloodTestResult entity created from DTO: " + result);
 
         return repository.save(result);

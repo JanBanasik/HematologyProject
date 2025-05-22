@@ -31,9 +31,10 @@ public class BloodTestPredictionDto {
 
     // Pola odpowiadające wynikom predykcji otrzymanym z FastAPI i dodanym w JS
     private String prediction;
-    private Double probability;
 
-    @Column(columnDefinition="MEDIUMTEXT")
+    @JsonProperty("probabilityLabel")
+    private String probabilityLabel;
+
     private String epicrisis; // Dodaj to pole, jeśli FastAPI zwraca epikryzę
 
 
@@ -124,12 +125,12 @@ public class BloodTestPredictionDto {
         this.prediction = prediction;
     }
 
-    public Double getProbability() {
-        return probability;
+    public String getProbabilityLabel() {
+        return probabilityLabel;
     }
 
-    public void setProbability(Double probability) {
-        this.probability = probability;
+    public void setProbabilityLabel(String probabilityLabel) {
+        this.probabilityLabel = probabilityLabel;
     }
 
     public String getEpicrisis() {
@@ -154,7 +155,7 @@ public class BloodTestPredictionDto {
                 ", PLT=" + PLT +
                 ", WBC=" + WBC +
                 ", prediction='" + prediction + '\'' +
-                ", probability=" + probability +
+                ", probability=" + probabilityLabel +
                 ", epicrisis='" + epicrisis + '\'' +
                 '}';
     }

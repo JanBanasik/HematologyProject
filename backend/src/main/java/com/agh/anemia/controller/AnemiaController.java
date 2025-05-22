@@ -31,14 +31,10 @@ public class AnemiaController {
 
     @PostMapping("/predict") // Scenariusz Thymeleaf -> FastAPI
     public String predict(@ModelAttribute BloodTestResult bloodTestResult, Model model) {
-        // Metoda predictAndSave w serwisie sama pobierze zalogowanego usera
+
         BloodTestResult savedResult = anemiaService.predictAndSave(bloodTestResult);
         model.addAttribute("result", savedResult);
-        // Możesz przekierować na stronę result lub pozostać na form i wyświetlić wynik
-        // Jeśli chcesz przekierować na dedykowaną stronę wyniku:
-        // return "redirect:/anemia/result/" + savedResult.getId(); // Wymagałoby nowego endpointu
-        // Jeśli zostajesz na tej samej stronie (form.html z JS):
-        return "result"; // Domyślne przejście do result.html - to działa z aktualnym setupem
+        return "result";
     }
 
 
