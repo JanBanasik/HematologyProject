@@ -1,11 +1,10 @@
-<!-- src/main/resources/templates/result.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
     <title>Szczegóły Wyniku</title>
     <style>
-        /* Style specyficzne dla strony wyniku */
+
         .result-container {
             background-color: #ffffff;
             border-radius: 8px;
@@ -204,7 +203,7 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Animacja dla elementów parametrów
+
         const parameterItems = document.querySelectorAll('.parameter-item');
 
         parameterItems.forEach(item => {

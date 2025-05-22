@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequestMapping("/anemia")
@@ -43,9 +44,19 @@ public class AnemiaController {
 
     @GetMapping("/history")
     public String showHistory(Model model) {
-        // ZMIENIONO WYWOŁANIE SERWISU: TERAZ POBIERA TYLKO HISTORIĘ DLA ZALOGOWANEGO UŻYTKOWNIKA
         model.addAttribute("results", anemiaService.getHistoryForCurrentUser());
         return "history";
+    }
+
+    @GetMapping("/history/details/{id}")
+    @ResponseBody
+    public BloodTestResult getResultDetails(@PathVariable Long id) {
+        BloodTestResult result = anemiaService.getResultByIdAndUser(id);
+        if (result == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Result Not Found or access denied");
+        }
+        return result;
     }
 
     @PostMapping("/savePredictionResult") // Zmieniono z "/save"

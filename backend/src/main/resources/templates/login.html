@@ -4,52 +4,49 @@
       th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
     <title>Logowanie</title>
-    <!-- Usunięto specyficzne style animacji, zostawiamy pusty tag style -->
+
     <style></style>
 </head>
 <body>
 <div class="page-content">
-    <!-- Usunięto wbudowane klasy stylów z kontenera -->
+
     <div class="login-container">
         <h2>Zaloguj się</h2>
 
-        <!-- Usunięto wbudowane klasy stylów z alertów -->
         <div th:if="${param.error}" class="alert-danger">
             Nieprawidłowa nazwa użytkownika lub hasło.
         </div>
 
-        <!-- Usunięto wbudowane klasy stylów z alertów -->
         <div th:if="${param.logout}" class="alert-info">
             Zostałeś wylogowany.
         </div>
 
-        <!-- Usunięto wbudowane klasy stylów z formularza -->
         <form class="login-form" th:action="@{/login}" method="post">
             <div class="form-group">
-                <!-- Usunięto wbudowane klasy stylów z label -->
+
                 <label for="username">Nazwa użytkownika:</label>
-                <!-- Usunięto wbudowane klasy stylów z input -->
+
                 <input type="text" id="username" name="username" required autofocus>
             </div>
 
             <div class="form-group">
-                <!-- Usunięto wbudowane klasy stylów z label -->
+
                 <label for="password">Hasło:</label>
-                <!-- Usunięto wbudowane klasy stylów z input -->
+
                 <input type="password" id="password" name="password" required>
             </div>
 
-            <!-- Usunięto wbudowane klasy stylów z przycisku -->
+
             <button type="submit">Zaloguj</button>
         </form>
 
-        <!-- Usunięto wbudowane klasy stylów z linków -->
+
         <div class="login-link-text">
             Nie masz jeszcze konta? <a th:href="@{/register}">Zarejestruj się tutaj</a>
         </div>
     </div>
 </div>
-<!-- Usunięto specyficzny skrypt animacji, zostawiamy pusty tag script -->
+
 <script></script>
 </body>
 </html>

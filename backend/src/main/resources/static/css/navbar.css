@@ -1,6 +1,3 @@
-/* src/main/resources/static/css/navbar.css */
-
-/* Style dla navbara (pozostają bez zmian) */
 .navbar {
     background-color: #0277bd;
     padding: 15px 30px;
@@ -23,13 +20,12 @@
     font-size: 1.4em;
     font-weight: bold;
     text-decoration: none;
-    transition: color 0.3s ease; /* Dodano transition dla koloru tytułu */
+    transition: color 0.3s ease;
 }
 .navbar .app-title:hover {
     color: #b3e5fc;
 }
 
-/* Style dla ikony hamburgera (pozostają bez zmian) */
 .hamburger-icon {
     display: none;
     background: none;
@@ -41,7 +37,6 @@
     z-index: 11;
 }
 
-/* Style dla głównej listy menu na większych ekranach (domyślne - poziome) */
 .navbar-menu {
     list-style: none;
     margin: 0;
@@ -50,69 +45,63 @@
     align-items: center;
 }
 
-/* Style dla elementów listy (li) w głównym menu */
 .navbar-menu li {
     margin-left: 25px;
-    position: relative; /* Ważne dla rozwijanych menu Badań */
+    position: relative;
 }
 
-/* Style dla LINKÓW (a) w głównym menu (z dodaną animacją podkreślenia) */
 .navbar-menu a {
     color: white;
     text-decoration: none;
     font-weight: bold;
     font-size: 1.1em;
-    transition: color 0.3s ease; /* Płynna zmiana koloru */
+    transition: color 0.3s ease;
     display: block;
     padding: 5px 0;
-    position: relative; /* WAŻNE: Ustawiamy position: relative na linku */
-    overflow: hidden; /* WAŻNE: Ukrywa pseudoelement poza obszarem linku */
+    position: relative;
+    overflow: hidden;
 }
 
 .navbar-menu a:hover {
-    color: #b3e5fc; /* Zmiana koloru tekstu przy najechaniu */
+    color: #b3e5fc;
 }
 
-/* Dodajemy pseudoelement ::after dla animowanego podkreślenia */
 .navbar-menu a::after {
-    content: ''; /* Pseudoelement musi mieć content */
-    position: absolute; /* Pozycjonowanie absolutne względem linku */
-    bottom: 0; /* Umieść na dole linku */
-    left: 0; /* Zaczynaj od lewej */
-    width: 100%; /* Pełna szerokość linku */
-    height: 2px; /* Grubość podkreślenia */
-    background-color: #b3e5fc; /* Kolor podkreślenia (jasny niebieski) */
-    transform-origin: bottom right; /* Punkt zaczepienia animacji skalowania */
-    transform: scaleX(0); /* Domyślnie ukryte (skalowane do 0 w poziomie) */
-    transition: transform 0.3s ease-out; /* Animacja skalowania w czasie 0.3s */
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #b3e5fc;
+    transform-origin: bottom right;
+    transform: scaleX(0);
+    transition: transform 0.3s ease-out;
 }
 
-/* Stan :hover dla pseudoelementu - pokaż podkreślenie */
 .navbar-menu a:hover::after {
-    transform-origin: bottom left; /* Zmień punkt zaczepienia dla animacji powrotnej */
-    transform: scaleX(1); /* Rozciągnij do pełnej szerokości */
+    transform-origin: bottom left;
+    transform: scaleX(1);
 }
 
-
-/* Style dla przycisku "Badania" (services-button) - dodana animacja podkreślenia */
 .services-button {
     background: none;
     border: none;
-    padding: 5px 0; /* padding jak linki */
+    padding: 5px 0;
     font: inherit;
     cursor: pointer;
     color: white;
     font-weight: bold;
     font-size: 1.1em;
-    transition: color 0.3s ease; /* Płynna zmiana koloru */
+    transition: color 0.3s ease;
     display: block;
-    position: relative; /* WAŻNE: Ustawiamy position: relative na przycisku */
-    overflow: hidden; /* WAŻNE: Ukrywa pseudoelement */
+    position: relative;
+    overflow: hidden;
 }
 .services-button:hover {
-    color: #b3e5fc; /* Zmiana koloru tekstu */
+    color: #b3e5fc;
 }
-/* Dodajemy pseudoelement ::after dla przycisku Badania */
+
 .services-button::after {
     content: '';
     position: absolute;
@@ -130,13 +119,10 @@
     transform: scaleX(1);
 }
 
-
-/* Style dla rozwijanego menu Badań (services-dropdown) - animowane wysuwanie na dużych ekranach */
 .services-dropdown {
     list-style: none;
     margin: 0;
     padding: 0;
-    /* display: none; Usunięto display: none, używamy max-height/opacity/visibility */
     position: absolute;
     top: 100%;
     left: 0;
@@ -145,24 +131,23 @@
     min-width: 180px;
     z-index: 20;
     border-radius: 0 0 4px 4px;
-    overflow: hidden; /* Ukryj zawartość wychodzącą poza max-height */
+    overflow: hidden;
 
-    /* Style do animacji wysuwania/zwijania dropdownu */
-    max-height: 0; /* Startowa wysokość (ukryte) */
-    opacity: 0; /* Startowa przezroczystość */
-    visibility: hidden; /* Ukryj element dla czytników ekranu gdy zwinięty */
-    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Animacja */
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
-/* Pokaż rozwijane menu Badań przy najechaniu lub focusie na element nadrzędny (li.navbar-services) na dużych ekranach */
+
 .navbar-services:hover > .services-dropdown,
 .navbar-services:focus-within > .services-dropdown {
-    max-height: 500px; /* Wystarczająco duża wartość, żeby pomieścić zawartość */
+    max-height: 500px;
     opacity: 1;
     visibility: visible;
 }
 
-/* Style dla elementów listy w rozwijanym menu Badań na dużych ekranach */
+
 .services-dropdown li {
     margin: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -171,47 +156,47 @@
     border-bottom: none;
 }
 
-/* Style dla linków (a) w rozwijanym menu Badań */
+
 .services-dropdown a {
     padding: 10px 15px;
     font-size: 1em;
     white-space: nowrap;
-    /* Nie dodajemy animacji podkreślenia tutaj, tylko zmiana koloru */
-    color: white;
-    transition: color 0.3s ease, background-color 0.3s ease; /* Dodano transition dla tła */
-    display: block; /* Nadal block */
-    text-decoration: none; /* Bez podkreślenia */
+
+    color: white; /* Linki w dropdownie białe */
+    transition: color 0.3s ease, background-color 0.3s ease;
+    display: block;
+    text-decoration: none;
 }
-/* Zmiana koloru tekstu i tła przy najechaniu w dropdownie */
+
+
 .services-dropdown a:hover {
     color: #b3e5fc;
-    background-color: rgba(255, 255, 255, 0.1); /* Lekkie podświetlenie tła */
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-
-/* Styl dla li opakowującego formularz wylogowania w navbarze */
 .logout-li {
     margin-left: 25px;
 }
-/* Styl dla przycisku Wyloguj (logout-button) - dodana animacja podkreślenia */
+
 .logout-button {
     background: none;
     border: none;
     padding: 5px 0;
     font: inherit;
     cursor: pointer;
-    color: white;
+    color: #F08080;
     font-weight: bold;
     font-size: 1.1em;
-    transition: color 0.3s ease; /* Płynna zmiana koloru */
+    transition: color 0.3s ease;
     display: block;
-    position: relative; /* WAŻNE: Ustawiamy position: relative na przycisku */
-    overflow: hidden; /* WAŻNE: Ukrywa pseudoelement */
+    position: relative;
+    overflow: hidden;
 }
 .logout-button:hover {
-    color: #b3e5fc; /* Zmiana koloru tekstu */
+    color: #F8A3A3;
 }
-/* Dodajemy pseudoelement ::after dla przycisku Wyloguj */
+
+
 .logout-button::after {
     content: '';
     position: absolute;
@@ -219,7 +204,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #b3e5fc;
+    background-color: #F08080;
     transform-origin: bottom right;
     transform: scaleX(0);
     transition: transform 0.3s ease-out;
@@ -229,18 +214,17 @@
     transform: scaleX(1);
 }
 
-/* Style dla ikony w przycisku Wyloguj */
 .logout-button span {
-    display: flex; /* flex */
-    align-items: center; /* items-center */
-    gap: 8px; /* gap-2 */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: inherit;
 }
-.logout-button svg { /* Jeśli używasz ikon SVG/font */
+.logout-button svg {
     transform: rotate(180deg);
+    fill: currentColor;
 }
 
-
-/* Media Query dla mniejszych ekranów (poniżej 768px) */
 @media (max-width: 768px) {
     .navbar {
         padding: 15px 20px;
@@ -254,9 +238,9 @@
         display: block;
     }
 
-    /* Główna lista menu staje się pionowym panelem mobilnym - ANIMOWANE WYSUNIĘCIE */
+
     .navbar-menu {
-        display: flex; /* Zmień na flexbox */
+        display: flex;
         flex-direction: column;
         position: absolute;
         top: 100%;
@@ -267,105 +251,170 @@
         z-index: 10;
         border-radius: 0;
 
-        /* Style do animacji wysuwania panelu mobilnego */
-        transform: translateX(100%); /* Startowa pozycja (poza ekranem) */
-        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Animacja */
-        max-height: 0; /* Ukryj domyślnie w mobilnym (max-height) */
-        opacity: 0; /* Ukryj domyślnie (opacity) */
-        visibility: hidden; /* Ukryj dla czytników ekranu */
-        overflow-y: auto; /* Dodano scrollowanie, jeśli menu jest za długie */
-        -webkit-overflow-scrolling: touch; /* Płynniejsze scrollowanie na iOS */
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* Aktywny stan menu mobilnego (pokazany) */
     .navbar-menu.active {
-        transform: translateX(0); /* Pozycja końcowa (na ekranie) */
-        max-height: calc(100vh - 60px); /* Zajmij prawie całą wysokość widoku (minus wysokość navbara) */
+        transform: translateX(0);
+        max-height: calc(100vh - 60px);
         opacity: 1;
         visibility: visible;
-        display: flex; /* Ustawiamy display flex */
+        display: flex;
     }
 
 
-    /* Style dla elementów listy w menu mobilnym */
     .navbar-menu li {
         margin: 0;
         width: 100%;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        position: static; /* Usuń pozycjonowanie absolutne */
+        position: static;
     }
     .navbar-menu li:last-child {
         border-bottom: none;
     }
 
-    /* Style dla linków i przycisków w menu mobilnym */
     .navbar-menu a,
     .navbar-menu .logout-button,
     .navbar-menu .services-button {
-        padding: 12px 20px; /* Większy padding dla klikalności */
-        width: 100%; /* Upewnij się, że wypełniają li */
+        padding: 12px 20px;
+        width: 100%;
         box-sizing: border-box;
-        text-align: left; /* Wyrównaj tekst do lewej */
-        /* Usunięcie animacji podkreślenia w trybie mobilnym */
-        position: static; /* Reset position */
-        overflow: visible; /* Reset overflow */
+        text-align: left;
+        position: static;
+        overflow: visible;
     }
-    /* Ukryj pseudoelement ::after w trybie mobilnym */
+
+    .navbar-menu a {
+        color: white;
+    }
+    .navbar-menu a:hover {
+        color: #b3e5fc;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-menu .services-button {
+        color: white;
+    }
+    .navbar-menu .services-button:hover {
+        color: #b3e5fc;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-menu a.logout-button {
+        color: #F08080 !important;
+    }
+    .navbar-menu a.logout-button:hover {
+        color: #F8A3A3; !important;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
     .navbar-menu a::after,
     .services-button::after,
     .logout-button::after {
         display: none;
     }
 
-    /* Style dla spanów z ikonami w menu mobilnym */
-    .navbar-menu a span,
     .logout-button span {
         display: flex;
         align-items: center;
         gap: 8px;
+        color: inherit;
+    }
+
+    .logout-button svg {
+        transform: rotate(180deg);
+        fill: currentColor; /* Dziedziczy kolor z .navbar-menu .logout-button */
     }
 
 
-    /* Style dla rozwijanego menu Badań w trybie mobilnym - ANIMOWANE ROZWIJANIE */
     .navbar-services .services-dropdown {
-        /* display: none; Usunięto display: none */
-        position: static;
-        background-color: rgba(0, 0, 0, 0.1); /* Lekko ciemniejsze tło */
+        /* ... (existing mobile dropdown styles) ... */
+        position: static; /* Ważne dla poprawnego ułożenia w menu mobilnym */
+        background-color: rgba(0, 0, 0, 0.1);
         box-shadow: none;
         border-radius: 0;
         width: 100%;
 
-        /* Style do animacji rozwijania/zwijania w mobilnym */
-        max-height: 0; /* Startowa wysokość (ukryte) */
-        opacity: 0; /* Startowa przezroczystość */
-        visibility: hidden; /* Ukryj element */
-        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Animacja */
-        overflow: hidden; /* Ukryj zawartość */
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        overflow: hidden;
     }
 
-    /* Pokaż rozwijane menu Badań w trybie mobilnym, gdy element nadrzędny (li.navbar-services) ma klasę 'expanded' */
+
     .navbar-services.expanded > .services-dropdown {
-        max-height: 500px; /* Wystarczająco duża wartość */
+        max-height: 500px;
         opacity: 1;
         visibility: visible;
     }
 
-    /* Style dla elementów listy w rozwijanym menu Badań w trybie mobilnym */
     .services-dropdown li {
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .services-dropdown li:last-child {
         border-bottom: none;
     }
-    /* Style dla linków w rozwijanym menu Badań w trybie mobilnym (wcięcie) */
+
     .services-dropdown a {
-        padding: 8px 30px; /* Zwiększ padding od lewej, żeby zrobić wcięcie */
+        padding: 8px 30px;
         font-size: 0.9em;
-        border-bottom: none; /* Usuń dolną linię linku w dropdownie */
+        border-bottom: none;
+        color: white; /* Linki w rozwijanym menu mobilnym białe */
+    }
+    .services-dropdown a:hover {
+        color: #b3e5fc; /* Linki w rozwijanym menu mobilnym hover niebieski */
     }
 
-    /* Usuń dolną linię pod przyciskiem Badania, gdy menu jest rozwinięte w trybie mobilnym */
     .navbar-services.expanded {
         border-bottom: none;
     }
+}
+.logout-button {
+    background-color: hsl(var(--destructive)) !important;
+    color: hsl(var(--destructive-foreground)) !important;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.logout-button:hover {
+    background-color: hsl(0, 70%, 50%) !important; /* ciemniejszy czerwony */
+    transform: translateY(-2px);
+}
+
+.logout-button:active {
+    transform: translateY(0);
+}
+
+
+button.login-button {
+    background-color: #81c784;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button.login-button:hover {
+    background-color: #66bb6a;
+    transform: translateY(-2px);
+}
+
+button.login-button:active {
+    transform: translateY(0);
 }

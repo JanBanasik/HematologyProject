@@ -4,135 +4,114 @@
       th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
   <title>Rejestracja</title>
-  <!-- Usunięto specyficzne style animacji, zostawiamy pusty tag style -->
+
   <style>
-    /* Opcjonalne style dla pól z błędem (czerwona ramka) - można je zostawić tutaj lub w global.css */
-    .form-group input.input-error {
-      border-color: #ef9a9a; /* Jasna czerwień */
-    }
+
   </style>
 </head>
 <body>
 <div class="page-content">
-  <!-- Usunięto wbudowane klasy stylów z kontenera -->
+
   <div class="registration-container">
     <h2>Załóż konto</h2>
 
-    <!-- Komunikat o błędzie rejestracji -->
-    <!-- Usunięto wbudowane klasy stylów z alertów -->
     <div th:if="${registrationError}" class="alert-danger">
       <p th:text="${registrationError}"></p>
     </div>
 
-    <!-- Formularz rejestracji -->
-    <!-- Usunięto wbudowane klasy stylów z formularza -->
     <form th:object="${user}" th:action="@{/register}" method="post" class="registration-form">
 
-      <!-- DODANE/ZMODYFIKOWANE POLA FORMULARZA (usunięto wbudowane style) -->
       <div class="form-group">
-        <!-- Usunięto wbudowane klasy stylów z label -->
         <label for="firstName">Imię:</label>
-        <!-- Usunięto wbudowane klasy stylów z input -->
+
         <input type="text" id="firstName" th:field="*{firstName}" required>
       </div>
       <div class="form-group">
-        <!-- Usunięto wbudowane klasy stylów z label -->
+
         <label for="lastName">Nazwisko:</label>
-        <!-- Usunięto wbudowane klasy stylów z input -->
+
         <input type="text" id="lastName" th:field="*{lastName}" required>
       </div>
       <div class="form-group">
-        <!-- Usunięto wbudowane klasy stylów z label -->
+
         <label for="email">Email:</label>
-        <!-- Usunięto wbudowane klasy stylów z input -->
+
         <input type="email" id="email" th:field="*{email}" required>
       </div>
-      <!-- KONIEC DODANYCH/ZMODYFIKOWANYCH PÓL -->
+
 
       <div class="form-group">
-        <!-- Usunięto wbudowane klasy stylów z label -->
+
         <label for="username">Nazwa użytkownika:</label>
-        <!-- Usunięto wbudowane klasy stylów z input -->
+
         <input type="text" id="username" th:field="*{username}" required>
       </div>
 
       <div class="form-group">
-        <!-- Usunięto wbudowane klasy stylów z label -->
+
         <label for="password">Hasło:</label>
-        <!-- Usunięto wbudowane klasy stylów z input -->
+
         <input type="password" id="password" th:field="*{password}" required>
       </div>
 
-      <!-- Pole POTWIERDZENIA HASŁA - NIE JEST POLEM ENCJI USER -->
       <div class="form-group">
         <label for="confirmPassword">Potwierdź hasło:</label>
         <input type="password" id="confirmPassword" name="confirmPassword" required>
       </div>
 
-      <!-- Domyślnie CSRF jest włączone -->
-      <!-- Nie potrzebujemy ręcznie dodawać ukrytego pola CSRF w formularzu Thymeleaf POST -->
-
-      <!-- Usunięto wbudowane klasy stylów z przycisku -->
       <button type="submit">Zarejestruj</button>
     </form>
 
-    <!-- Komunikat o błędzie zgodności haseł (dodany przez JS) -->
     <div id="password-match-error" class="alert-danger" style="display: none;">
       Hasła nie są zgodne!
     </div>
 
-
-    <!-- Usunięto wbudowane klasy stylów z linków -->
     <p class="login-link-text">
       Masz już konto? <a th:href="@{/login}">Zaloguj się tutaj</a>
     </p>
   </div>
 </div>
-<!-- SKRYPT SPECYFICZNY DLA REJESTRACJI - PRZEKAZYWANY JAKO ${scripts} DO LAYOUTU -->
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Walidacja zgodności haseł (frontendowa)
+
     const form = document.querySelector('.registration-form');
     if (form) {
       form.addEventListener('submit', function(e) {
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirmPassword');
 
-        // Usuń poprzednie style błędów
+
         passwordInput.classList.remove('input-error');
         confirmPasswordInput.classList.remove('input-error');
 
         if (passwordInput.value !== confirmPasswordInput.value) {
-          e.preventDefault(); // Zablokuj wysłanie formularza
+          e.preventDefault();
 
-          // Znajdź lub utwórz div dla komunikatu o błędzie haseł
           let passwordMatchErrorDiv = document.getElementById('password-match-error');
           if (!passwordMatchErrorDiv) {
-            // Ten przypadek nie powinien się zdarzyć, jeśli div jest statycznie w HTML,
-            // ale zostawiamy na wypadek, gdybyś chciał generować div dynamicznie
+
             passwordMatchErrorDiv = document.createElement('div');
             passwordMatchErrorDiv.id = 'password-match-error';
-            passwordMatchErrorDiv.className = 'alert-danger'; // Użyj klas alert-danger z CSS
+            passwordMatchErrorDiv.className = 'alert-danger';
             form.parentNode.insertBefore(passwordMatchErrorDiv, form);
           }
 
           passwordMatchErrorDiv.textContent = 'Hasła nie są zgodne!';
           passwordMatchErrorDiv.style.display = 'block';
 
-
-          // Dodaj klasę błędu do pól hasła dla stylizacji (CSS w <style> w head lub global.css)
           passwordInput.classList.add('input-error');
           confirmPasswordInput.classList.add('input-error');
 
           console.log("Hasła nie są zgodne!");
 
         } else {
-          // Jeśli hasła są zgodne, ukryj ewentualny komunikat błędu haseł
+
           const passwordMatchErrorDiv = document.getElementById('password-match-error');
           if (passwordMatchErrorDiv) {
             passwordMatchErrorDiv.style.display = 'none';
           }
-          // Usuń ewentualne style błędów z pól
+
           passwordInput.classList.remove('input-error');
           confirmPasswordInput.classList.remove('input-error');
         }

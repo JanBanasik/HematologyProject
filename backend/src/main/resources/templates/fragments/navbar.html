@@ -1,40 +1,28 @@
-<!-- src/main/resources/templates/fragments/navbar.html -->
 <nav class="navbar" th:fragment="navbar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="navbar-content">
-        <!-- Tytuł/Logo - link do strony głównej -->
+
         <a href="/" class="app-title">Aplikacja Medyczna</a>
 
-        <!-- Przycisk Hamburger Menu (widoczny tylko na małych ekranach) -->
-        <button class="hamburger-icon" id="hamburgerBtn" aria-label="Otwórz menu">
-            ☰ <!-- Unicode dla ikony hamburgera -->
-        </button>
-
-        <!-- Główna lista linków nawigacyjnych -->
         <ul class="navbar-menu" id="navbarMenu">
             <li><a href="/">Strona Główna</a></li>
 
-            <!-- Grupa linków do Badań (z rozwijanym menu/sekcją) -->
             <li class="navbar-services">
                 <button class="services-button" id="servicesBtn">Badania</button>
                 <ul class="services-dropdown" id="servicesDropdown">
-                    <!-- Linki do poszczególnych badań - pokaż tylko dla zalogowanych -->
-                    <li sec:authorize="isAuthenticated()"><a href="/anemia/form">Anemia Predykcja</a></li>
-                    <!-- W przyszłości: <li sec:authorize="isAuthenticated()"><a href="/diabetes/form">Cukrzyca Predykcja</a></li> -->
+
+                    <li sec:authorize="isAuthenticated()"><a href="/anemia/form">Anemia</a></li>
+
                 </ul>
             </li>
 
-            <!-- Link do Historii - pokaż tylko dla zalogowanych -->
             <li sec:authorize="isAuthenticated()"><a href="/anemia/history">Historia Wyników</a></li>
-
-            <!-- Opcjonalnie: Link do konta użytkownika - pokaż tylko dla zalogowanych -->
-            <!-- <li sec:authorize="isAuthenticated()"><a href="/account">Moje Konto</a></li> -->
-
-
-            <!-- Linki autoryzacji/wylogowania -->
-            <!-- Pokaż Logowanie i Rejestrację tylko dla anonimowych -->
             <li sec:authorize="isAnonymous()"><a th:href="@{/register}">Zarejestruj</a></li>
-            <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Zaloguj</a></li>
-            <!-- Pokaż Wylogowanie tylko dla zalogowanych -->
+            <li sec:authorize="isAnonymous()">
+                <a th:href="@{/login}">
+                    <button type="submit" class="login-button">Zaloguj</button>
+                </a>
+            </li>
+
             <li sec:authorize="isAuthenticated()" class="logout-li">
                 <form th:action="@{/logout}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />

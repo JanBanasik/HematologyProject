@@ -1,67 +1,86 @@
-<!-- src/main/resources/templates/form.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
     <title>Formularz Predykcji Anemii</title>
     <style>
-        /* Style specyficzne TYLKO dla form.html, jeśli są */
-        /* Przykład: styl dla loading state przycisku submit */
+
         button[type="submit"].loading {
-            /* Dodaj tu style wizualne dla loading state, np. zmiana koloru, ikonka */
-            background-color: #0288d1; /* Ciemniejszy niebieski podczas loading */
+            background-color: #0288d1;
             cursor: progress;
-            /* Możesz dodać ikonę, np. Font Awesome: */
-            /* &::after { content: " \f110"; font-family: "Font Awesome 5 Free"; animation: spin 1s linear infinite; } */
+
         }
-        /* Opcjonalnie: animacja obracania ikonki Font Awesome */
-        /* @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } */
+
+        /* Usunięto style flexbox, które były dodane dla jednostek obok inputów */
+        .form-group {
+            margin-bottom: 15px; /* Zachowano odstęp między grupami */
+            /* Domyślny display (np. block lub inline-block) powinien zadziałać lepiej */
+        }
+
+        .form-group label {
+            /* Domyślne style dla etykiet powinny być w porządku */
+            display: inline-block; /* Często używane, aby nadać etykietom szerokość/margines */
+            margin-right: 10px; /* Niewielki odstęp między etykietą a inputem */
+            min-width: 150px; /* Opcjonalnie: aby etykiety miały podobną minimalną szerokość dla lepszego wyrównania pionowego inputów */
+        }
+
+        .form-group input {
+            /* Domyślne style dla inputów powinny być w porządku */
+            /* Usunięto max-width, które było częścią poprzedniego układu flexbox */
+        }
+
+
     </style>
 </head>
 <body>
 <div class="page-content">
     <h2>Formularz Predykcji Anemii</h2>
     <form id="blood-form" class="form-container">
-        <!-- Pola formularza (jak poprzednio) -->
         <div class="form-group">
-            <label for="RBC">RBC:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="RBC">RBC [×10⁶/µL]:</label>
             <input type="number" step="any" name="RBC" id="RBC" required placeholder="np. 4.5">
         </div>
         <div class="form-group">
-            <label for="HGB">HGB:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="HGB">HGB [g/dL]:</label>
             <input type="number" step="any" name="HGB" id="HGB" required placeholder="np. 14">
         </div>
         <div class="form-group">
-            <label for="HCT">HCT:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="HCT">HCT [%]:</label>
             <input type="number" step="any" name="HCT" id="HCT" required placeholder="np. 42">
         </div>
         <div class="form-group">
-            <label for="MCV">MCV:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="MCV">MCV [fL]:</label>
             <input type="number" step="any" name="MCV" id="MCV" required placeholder="np. 90">
         </div>
         <div class="form-group">
-            <label for="MCH">MCH:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="MCH">MCH [pg]:</label>
             <input type="number" step="any" name="MCH" id="MCH" required placeholder="np. 30">
         </div>
         <div class="form-group">
-            <label for="MCHC">MCHC:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="MCHC">MCHC [g/dL]:</label>
             <input type="number" step="any" name="MCHC" id="MCHC" required placeholder="np. 33">
         </div>
         <div class="form-group">
-            <label for="RDW">RDW:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="RDW">RDW [%]:</label>
             <input type="number" step="any" name="RDW" id="RDW" required placeholder="np. 13">
         </div>
         <div class="form-group">
-            <label for="PLT">PLT:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="PLT">PLT [×10³/µL]:</label>
             <input type="number" step="any" name="PLT" id="PLT" required placeholder="np. 250">
         </div>
         <div class="form-group">
-            <label for="WBC">WBC:</label>
+            <!-- Jednostka dodana do tekstu label -->
+            <label for="WBC">WBC [×10³/µL]:</label>
             <input type="number" step="any" name="WBC" id="WBC" required placeholder="np. 7">
         </div>
-
-        <!-- Nie potrzebujemy tutaj ukrytego pola CSRF, JS doda je do nagłówka -->
-        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
 
         <button type="submit">Przewidź</button>
     </form>
@@ -72,7 +91,7 @@
         <a href="/anemia/history">Zobacz historię</a>
     </div>
 </div>
-<!-- SKRYPT SPECYFICZNY DLA FORMULARZA - PRZEKAZYWANY JAKO ${scripts} DO LAYOUTU -->
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('blood-form');
@@ -82,9 +101,8 @@
                 e.preventDefault();
 
                 const submitButton = this.querySelector('button[type="submit"]');
-                const originalText = submitButton ? submitButton.innerText : 'Przewidź'; // Zapisz oryginalny tekst lub domyślny
+                const originalText = submitButton ? submitButton.innerText : 'Przewidź';
 
-                // Zmień na loading state
                 if (submitButton) {
                     submitButton.innerText = 'Przetwarzanie...';
                     submitButton.disabled = true;
@@ -98,8 +116,7 @@
                 });
 
                 document.getElementById('result').innerText = 'Przewidywanie...';
-
-                // Wysyłanie do FastAPI - NIE DODAJEMY CSRF
+                document.getElementById('result').style.display = "block";
                 console.log('Sending to FastAPI /predict:', JSON.stringify(json));
                 try {
                     const response = await fetch('http://localhost:8000/predict', {
@@ -112,8 +129,7 @@
                         const errorText = await response.text();
                         console.error('FastAPI error response:', errorText);
                         document.getElementById('result').innerText = `Błąd serwera FastAPI: ${response.status} - ${errorText}`;
-                        // Nie resetuj przycisku tutaj, finally to zrobi
-                        return; // Stop if FastAPI call fails
+                        return;
                     }
 
                     const result = await response.json();
@@ -123,8 +139,6 @@
 
                     document.getElementById('result').innerText = `Przewidziano: ${result.prediction} (pewność: ${result.probability ? result.probability.toFixed(2) : 'N/A'})` + epicrisisText;
 
-
-                    // Teraz zapis do backendu Spring Boot (/anemia/save)
                     if (result.prediction && result.probability !== undefined) {
                         const resultData = {
                             ...json,
@@ -135,28 +149,25 @@
 
                         console.log('Saving result to backend:', JSON.stringify(resultData));
 
-                        // POBIERZ TOKEN CSRF Z META TAGÓW I DODAJ NAGŁÓWEK
-                        // Zakładamy, że getCsrfToken() jest dostępna globalnie (przeniesiona do global.js)
-                        const csrf = typeof getCsrfToken === 'function' ? getCsrfToken() : null; // Bezpieczne wywołanie
+                        const csrf = typeof getCsrfToken === 'function' ? getCsrfToken() : null;
 
                         const headers = {
                             'Content-Type': 'application/json'
-                            // Nagłówek CSRF dodamy tylko jeśli token jest dostępny
                         };
 
                         if (csrf && csrf.token && csrf.parameterName) {
-                            // Użyj nazwy parametru i wartości tokenu z meta tagów
-                            // CookieCsrfTokenRepository oczekuje nagłówka "X-XSRF-TOKEN"
-                            headers['X-XSRF-TOKEN'] = csrf.token; // Domyślna nazwa nagłówka dla Cookie repozytorium
+                            headers['X-XSRF-TOKEN'] = csrf.token;
                             console.log(`Using CSRF token in header: ${csrf.token}`);
                         } else {
                             console.warn('CSRF token meta tags not found or getCsrfToken not available. Backend save request will likely fail (403 Forbidden).');
                             document.getElementById('result').innerText += `\nBłąd: Brak tokena bezpieczeństwa. Proszę odświeżyć stronę lub zalogować się ponownie.`;
-                            // Możemy zatrzymać fetch, skoro wiemy, że się nie uda
-                            // return; // Jeśli chcesz zatrzymać fetch
+                            // Consider whether to proceed with saving without CSRF or not.
+                            // For typical Spring Security setups, this will fail.
+                            // If you want to allow it, you might need to configure CSRF differently on the backend.
+                            // For now, let's assume it's required and stop.
+                            // return; // Uncomment this line if you want to stop saving without CSRF
                         }
 
-                        // Kontynuuj fetch do backendu nawet jeśli brak tokena, żeby zobaczyć błąd 403
                         const saveResponse = await fetch('/anemia/savePredictionResult', {
                             method: 'POST',
                             headers: headers,
@@ -184,7 +195,7 @@
                 } catch (error) {
                     console.error('Fetch error:', error);
                     document.getElementById('result').innerText = `Wystąpił błąd: ${error.message}`;
-                } finally { // Zawsze resetuj przycisk po zakończeniu fetch (sukces lub błąd)
+                } finally {
                     if (submitButton) {
                         submitButton.innerText = originalText;
                         submitButton.disabled = false;

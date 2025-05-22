@@ -2,6 +2,7 @@
 package com.agh.anemia.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty; // Importuj adnotację Jacksona
+import jakarta.persistence.Column;
 
 // To jest obiekt, który Jackson będzie tworzył na podstawie JSON wysłanego z frontendu
 // Nie ma adnotacji JPA (@Entity, @Id, etc.) - to prosty obiekt Java (POJO)
@@ -31,6 +32,8 @@ public class BloodTestPredictionDto {
     // Pola odpowiadające wynikom predykcji otrzymanym z FastAPI i dodanym w JS
     private String prediction;
     private Double probability;
+
+    @Column(columnDefinition="MEDIUMTEXT")
     private String epicrisis; // Dodaj to pole, jeśli FastAPI zwraca epikryzę
 
 

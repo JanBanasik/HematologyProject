@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
       th:fragment="layout(title, styles, content, scripts)" lang="pl">
@@ -7,33 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:replace="${title}">Domyślny Tytuł Aplikacji Medycznej</title>
 
-    <!-- Globalne pliki CSS -->
+
     <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
     <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 
-    <!-- Style specyficzne dla strony -->
+
     <th:block th:replace="${styles}"></th:block>
 
-    <!-- Meta tagi CSRF dla JS -->
     <meta name="_csrf_parameterName" th:content="${_csrf.parameterName}" sec:authorize="isAuthenticated()">
     <meta name="_csrf_token" th:content="${_csrf.token}" sec:authorize="isAuthenticated()">
+    <meta name="_csrf_headerName" th:content="${_csrf.headerName}" sec:authorize="isAuthenticated()">
 </head>
 <body>
-<!-- Navbar -->
+
 <div th:insert="~{fragments/navbar :: navbar}"></div>
 
-<!-- Główny kontener treści -->
 <div class="container">
     <div class="page-content">
         <th:block th:replace="${content}"></th:block>
     </div>
 </div>
 
-<!-- Skrypty specyficzne dla strony -->
-<th:block th:replace="${scripts}"></th:block>
+<div sec:authorize="isAuthenticated()">
+    <div id="chat-button" class="chat-button">
 
-<!-- Globalny JavaScript -->
+        <span class="chat-emoji-icon">🤗</span>
+        <span class="chat-button-text">Czat</span>
+    </div>
+
+    <div id="chat-window" class="chat-window">
+        <div class="chat-header">
+            <span>Asystent Medyczny (AI)</span>
+            <button id="chat-close-button" class="chat-close-button">×</button>
+        </div>
+        <div id="chat-messages" class="chat-messages">>
+            <div class="chat-message bot">Witaj! Jestem Twoim wirtualnym asystentem medycznym. Jak mogę Ci pomóc?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-input-field" placeholder="Zadaj pytanie...">
+            <button id="chat-send-button">Wyślij</button>
+        </div>
+    </div>
+</div>
+
+
+<th:block th:replace="${scripts}"></th:block>
 <script th:src="@{/js/global.js}"></script>
+<script th:src="@{/js/chat.js}"></script>
+
 </body>
 </html>

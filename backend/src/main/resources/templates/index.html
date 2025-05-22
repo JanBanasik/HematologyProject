@@ -1,22 +1,23 @@
-
-<!-- src/main/resources/templates/index.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+<html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::style}, ~{::.page-content}, ~{::script})}" lang="pl">
 <head>
-    <title>Aplikacja Medyczna</title>
+    <title>BloodAI - Innowacyjne Laboratorium</title>
     <style>
-        /* Style specyficzne dla strony głównej */
+        /* Zachowujemy istniejące style */
+
+        /* --- Sekcja Hero (zmodyfikowana treść, dodana animacja) --- */
         .hero {
             text-align: center;
             margin-bottom: 40px;
             opacity: 0;
+            transform: translateY(20px);
             animation: fadeInUp 0.8s ease-out forwards;
         }
 
         .hero h1 {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
             color: #0277bd;
             position: relative;
             display: inline-block;
@@ -41,11 +42,63 @@
         .hero p {
             font-size: 1.2rem;
             color: #01579b;
-            max-width: 600px;
-            margin: 0 auto 30px;
+            max-width: 700px;
+            margin: 0 auto 15px;
             line-height: 1.6;
         }
 
+        /* Dodaj styl dla kontenera z grafiką */
+        .graphic-container {
+            text-align: center; /* Wyśrodkuj grafikę wewnątrz */
+            margin: 30px auto;
+        }
+
+        /* Placeholder na zdjęcie/grafikę (nowy element, dodana animacja) */
+        .bloodai-graphic {
+            width: 120px; /* Przykładowy rozmiar */
+            height: 120px; /* Przykładowy rozmiar */
+            /* margin: 30px auto; (przeniesiono do graphic-container) */
+            background-color: #e0f7fa; /* Przykładowe tło */
+            border-radius: 50%; /* Przykładowy kształt (koło) */
+            display: inline-block; /* Zmieniono na inline-block, żeby graphic-container mógł to wyśrodkować */
+
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out 0.9s forwards; /* Zaczyna się po sekcji hero */
+        }
+
+
+        /* --- Nagłówki sekcji (dodana animacja) --- */
+        .page-content h2 {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px; /* Dodaj margines pod nagłówkiem */
+            color: #0277bd; /* Kolor nagłówków */
+
+            opacity: 0;
+            transform: translateY(20px);
+            /* Animacja z opóźnieniem będzie dodawana inline lub przez nth-of-type */
+        }
+
+        /* --- Style dla nowych sekcji tekstowych --- */
+        .content-section {
+            max-width: 800px; /* Maksymalna szerokość tekstu */
+            margin: 20px auto; /* Wyśrodkowanie i marginesy */
+            line-height: 1.6;
+            color: #333; /* Kolor tekstu */
+            text-align: justify; /* Wyjustowanie tekstu (opcjonalnie) */
+
+            opacity: 0;
+            transform: translateY(20px);
+            /* Animacja z opóźnieniem będzie dodawana inline lub przez nth-of-type */
+        }
+
+        .content-section p {
+            margin-bottom: 1em; /* Odstęp między akapitami w sekcji */
+        }
+
+
+        /* --- Lista usług (dodana animacja do elementu UL i LI) --- */
         .services-list {
             list-style: none;
             padding: 0;
@@ -54,17 +107,23 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 20px;
+
+            /* Opcjonalnie: Animacja dla samej listy, jeśli nie chcesz animować pojedynczych elementów LI */
+            /* opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out 1.5s forwards; */
         }
 
         .services-list li {
             opacity: 0;
             transform: translateY(20px);
+            /* Animacje z opóźnieniami są definiowane poniżej */
         }
 
-        .services-list li:nth-child(1) { animation: fadeInUp 0.6s ease-out 0.3s forwards; }
-        .services-list li:nth-child(2) { animation: fadeInUp 0.6s ease-out 0.5s forwards; }
-        .services-list li:nth-child(3) { animation: fadeInUp 0.6s ease-out 0.7s forwards; }
+        /* Staggered animation dla elementów listy */
+        .services-list li:nth-child(1) { animation: fadeInUp 0.6s ease-out 1.5s forwards; } /* Zaczyna się po h2 */
+        /* Dodaj więcej reguł :nth-child(n) jeśli masz więcej elementów listy */
 
+
+        /* --- Styl linków "test-link" (pozostają bez zmian, JS animacja hover usunięta ze skryptu) --- */
         .test-link {
             display: inline-block;
             background-color: #4fc3f7;
@@ -78,6 +137,7 @@
             text-decoration: none;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .test-link::before {
@@ -109,8 +169,10 @@
         .test-link:active {
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition-duration: 0.05s;
         }
 
+        /* --- Definicja animacji --- */
         @keyframes fadeInUp {
             0% {
                 opacity: 0;
@@ -121,19 +183,74 @@
                 transform: translateY(0);
             }
         }
+
+        /* --- Animacja dla nowych sekcji treści (używamy nth-of-type do opóźnień) --- */
+        /* Nagłówki sekcji (po h1 z hero) */
+        .page-content > h2:nth-of-type(1) { /* Pierwszy h2 po hero */
+            animation: fadeInUp 0.6s ease-out 1.2s forwards; /* Zaczyna się po grafice */
+        }
+        .page-content > h2:nth-of-type(2) { /* Drugi h2 */
+            animation: fadeInUp 0.6s ease-out 2.5s forwards; /* Opóźnij po poprzedniej sekcji */
+        }
+        /* ... dodaj więcej, jeśli masz więcej h2 */
+
+
+        /* Sekcje tekstowe */
+        .page-content > .content-section:nth-of-type(1) { /* Pierwsza sekcja treści */
+            animation: fadeInUp 0.6s ease-out 2.8s forwards; /* Zaczyna się po drugim h2 */
+        }
+        .page-content > .content-section:nth-of-type(2) { /* Druga sekcja treści */
+            animation: fadeInUp 0.6s ease-out 3.1s forwards; /* Opóźnij po poprzedniej sekcji */
+        }
+        /* ... dodaj więcej, jeśli masz więcej .content-section */
+
+
+        /* Lista usług (ponownie dodana animacja dla listy, jeśli jest po sekcjach tekstowych) */
+        /* Jeśli lista usług jest na końcu, ta animacja powinna mieć największe opóźnienie */
+        .page-content > .services-list {
+            animation: fadeInUp 0.6s ease-out 3.4s forwards; /* Zaczyna się po ostatniej sekcji tekstowej */
+        }
+
+
     </style>
 </head>
 <body>
 <div class="page-content">
     <div class="hero">
-        <h1>Witaj w Aplikacji Medycznej</h1>
-        <p>Tutaj możesz skorzystać z dostępnych narzędzi do predykcji i analizy badań.</p>
+        <!-- Zmodyfikowana treść Hero -->
+        <h1>BloodAI – Sztuczna Inteligencja w Służbie Diagnostyki</h1>
+        <p>Witamy w BloodAI – platformie nowej generacji, która łączy medycynę z zaawansowaną analityką AI, aby wspierać lekarzy i pacjentów w trafniejszej diagnozie anemii.</p>
     </div>
 
+    <!-- Placeholder na grafikę -->
+    <div class="graphic-container">
+        <div class="bloodai-graphic">
+            <!-- Tutaj możesz wstawić tag <img> np. <img th:src="@{/images/blood-drop-ai.svg}" alt="BloodAI Graphic"> -->
+        </div>
+    </div>
+
+
+    <!-- --- Nowe sekcje treści --- -->
+
+    <h2>Kim jesteśmy?</h2>
+    <div class="content-section">
+        <p>Jesteśmy zespołem pasjonatów - specjalistów z zakresu medycyny, informatyki i sztucznej inteligencji, zjednoczonych wspólnym celem: zrewolucjonizowania procesu diagnostycznego. Wierzymy, że potencjał AI w analizie danych medycznych jest ogromny i może znacząco poprawić dostępność oraz precyzję diagnoz.</p>
+        <p>Nasze korzenie tkwią w badaniach naukowych i praktyce klinicznej. Rozumiemy wyzwania współczesnej opieki zdrowotnej i dążymy do tworzenia narzędzi, które realnie wspierają pracę profesjonalistów i dają pacjentom szybszy dostęp do informacji o ich zdrowiu.</p>
+    </div>
+
+    <h2>Co robimy? / Nasza Misja</h2>
+    <div class="content-section">
+        <p>BloodAI koncentruje się na tworzeniu zaawansowanych modeli AI, które analizują wyniki badań laboratoryjnych. Naszym pierwszym narzędziem jest predyktor anemii, zdolny do analizy kluczowych parametrów krwi i wskazywania potencjalnego typu anemii z wysoką pewnością.</p>
+        <p>Nie ograniczamy się jednak tylko do diagnozy. Dążymy do tego, by BloodAI stało się kompleksową platformą dostarczającą wartościowych spostrzeżeń (insights) z danych medycznych, ułatwiającą monitorowanie stanu zdrowia i wspierającą spersonalizowane podejście do leczenia.</p>
+        <p>Nasza misja to budowanie mostu między skomplikowanymi danymi medycznymi a łatwo zrozumiałą informacją, dostępną zarówno dla lekarzy, jak i pacjentów. Chcemy, aby technologia służyła poprawie jakości życia i przyspieszeniu procesu dochodzenia do zdrowia.</p>
+    </div>
+
+    <!-- --- Sekcja "Dostępne badania" (pozycjonowana na końcu) --- -->
     <h2>Dostępne badania / predykcje:</h2>
 
     <ul class="services-list">
         <li>
+            <!-- Link do predykcji Anemii -->
             <a th:if="${#authorization.expression('isAuthenticated()')}"
                th:href="@{/anemia/form}"
                class="test-link">
@@ -144,39 +261,26 @@
                class="test-link">
                 Predykcja Anemii
             </a>
-
         </li>
-        <!-- Tutaj możesz dodać więcej badań w przyszłości -->
+        <!-- Dodaj więcej elementów <li> dla innych usług, jeśli istnieją -->
+        <li>
+            <!-- Przykład: Link do innej usługi, jeśli dodasz -->
+            <!-- <a href="/inna-usluga/form" class="test-link">Inna Usługa (Przykład)</a> -->
+        </li>
+
     </ul>
+
+    <!-- Inne sekcje treści, jeśli istnieją -->
+
+
 </div>
+
+<!-- Pusty blok skryptu, globalne skrypty są dołączane przez layout -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Dodaj animację "pulsowania" dla linków na stronie głównej
-        const links = document.querySelectorAll('.test-link');
-
-        links.forEach(link => {
-            // Pulsujący cień
-            let pulseAnimation;
-
-            link.addEventListener('mouseenter', () => {
-                let scale = 1.05;
-                let increasing = false;
-
-                pulseAnimation = setInterval(() => {
-                    if (scale >= 1.07) increasing = false;
-                    if (scale <= 1.03) increasing = true;
-
-                    scale = increasing ? scale + 0.002 : scale - 0.002;
-                    link.style.transform = `translateY(-7px) scale(${scale})`;
-                }, 30);
-            });
-
-            link.addEventListener('mouseleave', () => {
-                clearInterval(pulseAnimation);
-                link.style.transform = '';
-            });
-        });
-    });
+    // Custom scripts for this page, if any.
+    // Currently empty, as animations are handled by CSS.
 </script>
+
+
 </body>
 </html>

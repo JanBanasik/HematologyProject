@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>java.com.agh.anemia</groupId>
 	<artifactId>anemia-predictor</artifactId>
@@ -38,8 +38,14 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.32</version> <!-- lub najnowsza dostępna -->
+			<version>1.18.32</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -66,7 +72,7 @@
 				<artifactId>mysql-connector-j</artifactId>
 				<scope>runtime</scope>
 			</dependency>
-			<!-- Ewentualnie coś do CORS, walidacji, testów itd. -->
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -96,5 +102,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
