@@ -1,22 +1,22 @@
-# BloodAI – Artificial Intelligence for Anemia Diagnosis
+# 🧬 BloodAI – Artificial Intelligence for Anemia Diagnosis
 
 [![Project Status](https://img.shields.io/badge/Status-In_Development-yellow)](https://github.com/JanBanasik/HematologyProject)  
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/JanBanasik/HematologyProject/blob/main/LICENSE)
 
-## Project Overview
+## 🧠 Project Overview
 
 **BloodAI** is a web-based platform designed to assist doctors and patients in the diagnosis of anemia. It combines advanced AI models with an intuitive user interface to predict anemia types based on blood test results and offers an interactive medical chatbot.
 
 The project is composed of two main components:
 
-1. **Backend (Spring Boot):** Handles business logic, user management, database operations (MySQL), and communication with both the frontend and the AI service.
-2. **AI Service (Python/FastAPI):** Provides endpoints for anemia prediction (using a trained XGBoost model), chatbot responses (via the Polish LLM *Bielik*), and medical summary generation (*Gemini 1.5 Flash*).
+1. **🔧 Backend (Spring Boot):** Handles business logic, user management, database operations (MySQL), and communication with both the frontend and the AI service.
+2. **🧪 AI Service (Python/FastAPI):** Provides endpoints for anemia prediction (using a trained XGBoost model), chatbot responses (via the Polish LLM *Bielik*), and medical summary generation (*Gemini 1.5 Flash*).
 
 Currently, the frontend is implemented with Thymeleaf, but a migration to React is planned to enable a more decoupled architecture.
 
 ---
 
-## 📸 Screenshots
+## ✨ Preview
 
 ### 🧪 Anemia Prediction Interface
 ![image](https://github.com/user-attachments/assets/a3c0d8ac-6e64-4c4b-af5c-446607dbe044)
@@ -24,25 +24,23 @@ Currently, the frontend is implemented with Thymeleaf, but a migration to React 
 ### 💬 AI Medical Chatbot
 ![image](https://github.com/user-attachments/assets/985a98ae-307f-48fc-a157-01850cd1f20b)
 
-
 ### 📝 Generated Medical Summary (Epicrisis)
 ![image](https://github.com/user-attachments/assets/02eb62f1-acd9-4de5-93f1-8361f045cb41)
 
-
 ---
 
-## Features
+## 🚀 Features
 
-- **Anemia Type Prediction:** Identifies the most probable type of anemia (e.g., Microcytic, Macrocytic, Hemolytic, Aplastic, Normocytic) or classifies as *Healthy* based on key blood parameters.
-- **Medical Chatbot:** An interactive assistant based on the Polish LLM *Bielik*, capable of answering questions related to hematology and anemia.
-- **Medical Summary Generator:** Automatically creates clinical summaries (epicrises) based on blood test results and predictions, powered by *Gemini 1.5 Flash*.
-- **Prediction History:** Logged-in users can browse a history of their past predictions.
-- **User Authentication:** Secure registration and login system for personalized experiences.
-- **User-Friendly Interface:** Clean and accessible web UI (currently Thymeleaf, migrating to React soon).
+- 🧠 **Anemia Type Prediction:** Identifies the most probable type of anemia (e.g., Microcytic, Macrocytic, Hemolytic, Aplastic, Normocytic) or classifies as *Healthy* based on key blood parameters.
+- 🤖 **Medical Chatbot:** An interactive assistant based on the Polish LLM *Bielik*, capable of answering questions related to hematology and anemia.
+- 📄 **Medical Summary Generator:** Automatically creates clinical summaries (epicrises) based on blood test results and predictions, powered by *Gemini 1.5 Flash*.
+- 📜 **Prediction History:** Logged-in users can browse a history of their past predictions.
+- 🔐 **User Authentication:** Secure registration and login system for personalized experiences.
+- 💻 **User-Friendly Interface:** Clean and accessible web UI (currently Thymeleaf, migrating to React soon).
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-### Backend (Spring Boot)
+### ☕ Backend (Spring Boot)
 
 - Java, Spring Boot
 - Spring Security, Spring Data JPA, Hibernate
@@ -51,7 +49,7 @@ Currently, the frontend is implemented with Thymeleaf, but a migration to React 
 - REST APIs via `RestTemplate`
 - Thymeleaf (templating engine)
 
-### AI Service (Python/FastAPI)
+### 🐍 AI Service (Python/FastAPI)
 
 - Python, FastAPI
 - XGBoost (for anemia prediction)
@@ -60,24 +58,24 @@ Currently, the frontend is implemented with Thymeleaf, but a migration to React 
 - Google Generative AI / Gemini 1.5 Flash (for epicrises)
 - `python-dotenv`, `scikit-learn`, `pandas`, `numpy`, `torch`, `joblib`
 
-### Frontend
+### 🖥️ Frontend
 
 - Thymeleaf (currently)
 - HTML, CSS, JavaScript  
 - React (planned)
 
-## Installation Guide
+## 📦 Installation Guide
 
 To run the project locally, you need to set up both the Spring Boot backend and the Python AI service.
 
-### 1. MySQL Database Setup
+### 1️⃣ MySQL Database Setup
 
 1. Install MySQL server.
 2. Create a new database for the project.
 3. Update the `application.properties` file in the Spring Boot project with your database URL, username, and password.  
    *(Spring Data JPA will automatically generate the required tables on first run.)*
 
-### 2. AI Service Setup (Python/FastAPI)
+### 2️⃣ AI Service Setup (Python/FastAPI)
 
 1. Clone the repository:
     ```bash
@@ -117,7 +115,7 @@ To run the project locally, you need to set up both the Spring Boot backend and 
     ```
    The service will be available at `http://127.0.0.1:8000`.
 
-### 3. Backend Setup (Spring Boot)
+### 3️⃣ Backend Setup (Spring Boot)
 
 1. Navigate to the Spring Boot project directory.
 2. Install Maven dependencies:
@@ -130,7 +128,7 @@ To run the project locally, you need to set up both the Spring Boot backend and 
     ```
    It will be accessible by default at `http://localhost:8080`.
 
-## How to Use
+## 🧑‍💻 How to Use
 
 1. Open your browser and go to `http://localhost:8080`.
 2. Register and log in.
@@ -140,7 +138,9 @@ To run the project locally, you need to set up both the Spring Boot backend and 
 6. Explore your prediction history.
 7. Use the chatbot (bottom-right chat bubble) to ask medical questions.
 
-## Project Structure
+## 📁 Project Structure
+
+
 
 ```
 HematologyProject/
@@ -167,14 +167,15 @@ HematologyProject/
 └── ...
 ```
 
-## Future Plans
 
-- Migration to a React frontend
-- Further AI model improvements
-- More advanced chatbot interactions
-- Integration of data visualizations
+## 🔮 Future Plans
 
-## Contact
+- ⚛️ Migration to a React frontend
+- 🧬 Further AI model improvements
+- 💡 More advanced chatbot interactions
+- 📊 Integration of data visualizations
+
+## 📫 Contact
 
 For questions or collaboration inquiries, feel free to reach out:
 
